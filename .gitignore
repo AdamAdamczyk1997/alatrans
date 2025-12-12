@@ -1,0 +1,18 @@
+# VS Code
+.vscode/
+
+# Prettier
+.prettierignore
+
+# Pliki robocze / notatki
+Notes.txt
+
+# Archiwa
+*.zip
+
+# Systemowe (Linux / macOS / Windows)
+.DS_Store
+Thumbs.db
+
+# Tymczasowe
+*.log
