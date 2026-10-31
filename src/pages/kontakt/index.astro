@@ -1,0 +1,58 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { site } from '../../data/site';
+---
+
+<BaseLayout
+  title="Kontakt — Pomoc drogowa AlaTrans, Łącko"
+  description="Zadzwoń do AlaTrans: 880 887 092. Pomoc drogowa 24/7 w Łącku i okolicach, transport pojazdów w Polsce oraz samochodów z Niemiec."
+>
+  <section class="page-intro">
+    <div class="wrap prose">
+      <p class="section-kicker">Porozmawiajmy o Twoim zleceniu</p>
+      <h1>Kontakt — AlaTrans</h1>
+      <p class="lead">Potrzebujesz pomocy na drodze lub wyceny transportu? Najprościej zadzwonić — omówimy sytuację i ustalimy warunki usługi.</p>
+      <a class="contact-number" href={site.phoneHref}>{site.phoneDisplay}</a>
+      <p>Pomoc drogowa: kontakt całodobowy, także nocą i w święta.</p>
+    </div>
+  </section>
+
+  <section class="section soft" aria-labelledby="inne-informacje-kontaktowe">
+    <div class="wrap content-grid">
+      <article class="detail-card">
+        <p class="section-kicker">Alternatywny kontakt</p>
+        <h2 id="inne-informacje-kontaktowe">Znajdziesz nas na Facebooku</h2>
+        <p>Możesz również skorzystać z naszego profilu na Facebooku.</p>
+        <a class="text-link" href={site.facebook} target="_blank" rel="noopener noreferrer">Przejdź do profilu Facebook <span aria-hidden="true">↗</span><span class="sr-only"> (otwiera się w nowej karcie)</span></a>
+      </article>
+      <article class="detail-card">
+        <p class="section-kicker">Baza lawety</p>
+        <h2>Łącko</h2>
+        <p>W Łącku znajduje się nasza baza sprzętu. To nie punkt obsługi klienta — w przypadku awarii zadzwoń, aby ustalić dojazd lawety do Ciebie.</p>
+      </article>
+    </div>
+  </section>
+
+  <section class="section" aria-labelledby="gdzie-dzialamy">
+    <div class="wrap">
+      <div class="section-heading">
+        <div>
+          <p class="section-kicker">Dwa rodzaje zleceń</p>
+          <h2 id="gdzie-dzialamy">Gdzie działamy?</h2>
+        </div>
+      </div>
+      <div class="content-grid">
+        <article class="detail-card">
+          <h3>Pomoc drogowa 24/7</h3>
+          <p>Łącko, Nowy Sącz, Stary Sącz i szersze okolice. Podaj miejsce zdarzenia, rodzaj pojazdu i opis problemu.</p>
+          <a class="text-link" href="/pomoc-drogowa/">Sprawdź zakres pomocy <span aria-hidden="true">→</span></a>
+        </article>
+        <article class="detail-card">
+          <h3>Transport pojazdów</h3>
+          <p>Cała Polska oraz transport samochodów z Niemiec. Przygotuj miejsca odbioru i dostawy, typ pojazdu oraz proponowany termin.</p>
+          <a class="text-link" href="/transport-pojazdow/">Sprawdź warunki transportu <span aria-hidden="true">→</span></a>
+        </article>
+      </div>
+    </div>
+  </section>
+</BaseLayout>

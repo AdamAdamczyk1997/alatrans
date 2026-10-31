@@ -1,0 +1,10 @@
+---
+import { navigation } from '../data/site';
+const year = new Date().getUTCFullYear();
+---
+<footer class="footer">
+  <div class="wrap footer-inner">
+    <div><span>© {year} AlaTrans</span><span>Łącko · Pomoc drogowa i transport pojazdów</span></div>
+    <nav aria-label="Nawigacja w stopce">{navigation.map(item => <a href={item.href}>{item.label}</a>)}</nav>
+  </div>
+</footer>

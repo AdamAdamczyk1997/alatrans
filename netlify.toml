@@ -1,0 +1,47 @@
+[build]
+  command = "npm run build"
+  publish = "dist"
+
+[build.environment]
+  NODE_VERSION = "22.23.4"
+
+[context.deploy-preview.environment]
+  PREVIEW_NOINDEX = "true"
+
+[context.branch-deploy.environment]
+  PREVIEW_NOINDEX = "true"
+
+[[redirects]]
+  from = "/photos/laweta_car_1.jpg"
+  to = "/photos/laweta_car_1.webp"
+  status = 301
+
+[[redirects]]
+  from = "/photos/laweta_car_2.jpg"
+  to = "/photos/laweta_car_2.webp"
+  status = 301
+
+[[redirects]]
+  from = "/photos/laweta_car_3.jpg"
+  to = "/photos/laweta_car_3.webp"
+  status = 301
+
+[[redirects]]
+  from = "/photos/laweta_car_4.jpg"
+  to = "/photos/laweta_car_4.webp"
+  status = 301
+
+[[redirects]]
+  from = "/photos/laweta_car_5.jpg"
+  to = "/photos/laweta_car_5.webp"
+  status = 301
+
+[[redirects]]
+  from = "/photos/laweta_car_6.jpg"
+  to = "/photos/laweta_car_6.webp"
+  status = 301
+
+[[redirects]]
+  from = "/photos/laweta_car_7.jpg"
+  to = "/photos/laweta_car_7.webp"
+  status = 301

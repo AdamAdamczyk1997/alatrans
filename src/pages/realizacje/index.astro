@@ -1,0 +1,52 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import VehiclePhoto from '../../components/VehiclePhoto.astro';
+import { getImage } from 'astro:assets';
+import { photos as imageSources } from '../../data/photos';
+const photos = [
+  { name: 'laweta_car_1' as const, alt: 'Laweta AlaTrans z jasnym samochodem osobowym na platformie' },
+  { name: 'laweta_car_3' as const, alt: 'Laweta AlaTrans z uszkodzonym samochodem osobowym na platformie nocą' },
+  { name: 'laweta_car_4' as const, alt: 'Laweta AlaTrans z widoczną kabiną i pustą platformą' },
+  { name: 'laweta_car_5' as const, alt: 'Laweta AlaTrans z pustą platformą, widok z przodu i z boku' },
+  { name: 'laweta_car_7' as const, alt: 'Laweta AlaTrans z niebieskim samochodem osobowym na platformie' },
+];
+const gallery = await Promise.all(photos.map(async photo => ({ ...photo, src: (await getImage({ src: imageSources[photo.name], width: 1600, format: 'webp', quality: 80 })).src })));
+---
+<BaseLayout title="Realizacje i zdjęcia lawety | AlaTrans" description="Zobacz autentyczne zdjęcia lawety AlaTrans oraz przewozów samochodów osobowych. Pomoc drogowa i transport pojazdów z bazą w Łącku.">
+  <section class="page-intro"><div class="wrap"><a class="back-link" href="/">Strona główna <span aria-hidden="true">/</span></a><p class="section-kicker">Nasza laweta i przewozy</p><h1>Realizacje AlaTrans</h1><p class="lead">Prawdziwe zdjęcia naszego pojazdu i wykonanych przewozów. Zobacz, jak wygląda laweta AlaTrans.</p></div></section>
+  <section class="gallery-section"><div class="wrap"><h2 class="sr-only">Galeria zdjęć</h2>
+    <div class="gallery-grid">
+      {gallery.map((photo, i) => <figure class="gallery-item"><button class="gallery-open" type="button" data-src={photo.src} data-alt={photo.alt} aria-label={`Powiększ zdjęcie: ${photo.alt}`} aria-haspopup="dialog"><VehiclePhoto name={photo.name} alt={photo.alt} hero={i === 0} sizes="(max-width: 600px) calc(100vw - 36px), (max-width: 1030px) 45vw, 375px" /><span class="zoom-mark" aria-hidden="true">↗</span></button><figcaption>{photo.alt}</figcaption></figure>)}
+    </div>
+    <noscript><p>Zdjęcia w pełnym rozmiarze: {photos.map((photo, i) => <><a class="text-link" href={`/photos/${photo.name}.webp`}>Zdjęcie {i + 1}</a>{i < photos.length - 1 ? ' · ' : ''}</>)}</p></noscript>
+  </div></section>
+  <dialog id="gallery-dialog" aria-labelledby="gallery-caption">
+    <div class="dialog-toolbar"><p id="gallery-caption"></p><button class="dialog-close" type="button" aria-label="Zamknij zdjęcie">Zamknij <span aria-hidden="true">×</span></button></div>
+    <img class="dialog-image" width="1600" height="1200" alt="" />
+  </dialog>
+</BaseLayout>
+<script>
+  const dialog = document.querySelector<HTMLDialogElement>('#gallery-dialog');
+  const image = dialog?.querySelector<HTMLImageElement>('.dialog-image');
+  const caption = dialog?.querySelector<HTMLElement>('#gallery-caption');
+  const closeButton = dialog?.querySelector<HTMLButtonElement>('.dialog-close');
+  let trigger: HTMLButtonElement | null = null;
+  if (dialog && image && caption && closeButton) {
+    document.querySelectorAll<HTMLButtonElement>('.gallery-open').forEach(button => {
+      button.addEventListener('click', () => {
+        trigger = button;
+        image.src = button.dataset.src ?? '';
+        image.alt = button.dataset.alt ?? '';
+        caption.textContent = image.alt;
+        const thumbnail = button.querySelector('img');
+        if (thumbnail) { image.width = thumbnail.width; image.height = thumbnail.height; }
+        dialog.showModal();
+        document.body.classList.add('dialog-open');
+        closeButton.focus();
+      });
+    });
+    closeButton.addEventListener('click', () => dialog.close());
+    dialog.addEventListener('click', event => { if (event.target === dialog) dialog.close(); });
+    dialog.addEventListener('close', () => { document.body.classList.remove('dialog-open'); trigger?.focus(); });
+  }
+</script>

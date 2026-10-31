@@ -1,0 +1,61 @@
+---
+import '../styles/global.css';
+import SiteHeader from '../components/SiteHeader.astro';
+import SiteFooter from '../components/SiteFooter.astro';
+import MobileCallBar from '../components/MobileCallBar.astro';
+import ContactBand from '../components/ContactBand.astro';
+import { site } from '../data/site';
+interface Props { title: string; description: string; noindex?: boolean; }
+const { title, description, noindex = false } = Astro.props;
+const canonical = new URL(Astro.url.pathname, site.url).href;
+const preview = process.env.PREVIEW_NOINDEX === 'true' || ['deploy-preview', 'branch-deploy'].includes(process.env.CONTEXT ?? '');
+const structuredData = {
+  '@context': 'https://schema.org',
+  '@type': 'LocalBusiness',
+  '@id': `${site.url}/#business`,
+  name: site.name,
+  url: `${site.url}/`,
+  telephone: site.phone,
+  image: `${site.url}/photos/laweta_car_4.webp`,
+  logo: `${site.url}/photos/logo.png`,
+  address: { '@type': 'PostalAddress', addressLocality: 'Łącko', addressCountry: 'PL' },
+  description: 'Pomoc drogowa 24/7 w Łącku i okolicach oraz uzgadniany indywidualnie transport pojazdów po Polsce i samochodów z Niemiec.',
+  openingHoursSpecification: [{ '@type': 'OpeningHoursSpecification', dayOfWeek: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'], opens: '00:00', closes: '23:59', description: 'Całodobowy kontakt w sprawie pomocy drogowej' }],
+  hasOfferCatalog: { '@type': 'OfferCatalog', name: 'Usługi AlaTrans', itemListElement: [
+    { '@type': 'Offer', itemOffered: { '@type': 'Service', name: 'Pomoc drogowa 24/7', areaServed: ['Łącko', 'Nowy Sącz', 'Stary Sącz i okolice'] } },
+    { '@type': 'Offer', itemOffered: { '@type': 'Service', name: 'Transport pojazdów po Polsce i samochodów z Niemiec', areaServed: ['Polska', 'Niemcy'] } },
+  ] },
+};
+---
+<!doctype html>
+<html lang="pl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#fcfcfa" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    {(preview || noindex) && <meta name="robots" content="noindex, nofollow" />}
+    <link rel="canonical" href={canonical} />
+    <link rel="icon" href="/favicon/favicon.ico" sizes="any" />
+    <link rel="icon" type="image/png" href="/favicon/favicon-32x32.png" sizes="32x32" />
+    <meta property="og:locale" content="pl_PL" />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="AlaTrans" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={`${site.url}/photos/laweta_car_4.webp`} />
+    <meta property="og:image:width" content="1600" />
+    <meta property="og:image:height" content="900" />
+    <meta property="og:image:alt" content="Laweta AlaTrans z widoczną kabiną i pustą platformą" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <script type="application/ld+json" set:html={JSON.stringify(structuredData)} />
+  </head>
+  <body>
+    <SiteHeader />
+    <main id="main-content" tabindex="-1"><slot /><ContactBand /></main>
+    <SiteFooter />
+    <MobileCallBar />
+  </body>
+</html>

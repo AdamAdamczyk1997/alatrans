@@ -1,0 +1,43 @@
+---
+import { Image } from 'astro:assets';
+import logo from '../../assets/logo.png';
+import { navigation, site } from '../data/site';
+import PhoneIcon from './PhoneIcon.astro';
+const current = Astro.url.pathname;
+---
+<a class="skip-link" href="#main-content">Pomiń do treści</a>
+<header class="site-header">
+  <div class="header-inner wrap">
+    <a class="brand" href="/" aria-label="AlaTrans — strona główna"><Image src={logo} alt="AlaTrans" width={144} widths={[144, 288]} sizes="(max-width: 760px) 115px, 144px" format="webp" loading="eager" /></a>
+    <button class="menu-button" type="button" aria-label="Otwórz menu" aria-expanded="false" aria-controls="site-navigation" hidden>
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+    </button>
+    <nav id="site-navigation" class="site-navigation" aria-label="Nawigacja główna">
+      {navigation.map(item => <a href={item.href} aria-current={current === item.href ? 'page' : undefined}>{item.label}</a>)}
+    </nav>
+    <a class="top-call" href={site.phoneHref} aria-label={`Zadzwoń: ${site.phoneDisplay}`}><PhoneIcon />{site.phoneDisplay}</a>
+  </div>
+</header>
+<script>
+  const button = document.querySelector<HTMLButtonElement>('.menu-button');
+  const nav = document.querySelector<HTMLElement>('#site-navigation');
+  if (button && nav) {
+    button.hidden = false;
+    nav.classList.add('is-enhanced');
+    const setOpen = (open: boolean, restoreFocus = false) => {
+      button.setAttribute('aria-expanded', String(open));
+      button.setAttribute('aria-label', open ? 'Zamknij menu' : 'Otwórz menu');
+      nav.classList.toggle('is-open', open);
+      if (restoreFocus) button.focus();
+    };
+    button.addEventListener('click', () => setOpen(button.getAttribute('aria-expanded') !== 'true'));
+    document.addEventListener('keydown', event => {
+      if (event.key === 'Escape' && button.getAttribute('aria-expanded') === 'true') setOpen(false, true);
+    });
+    nav.querySelectorAll('a').forEach(link => link.addEventListener('click', () => setOpen(false)));
+    document.addEventListener('click', event => {
+      if (event.target instanceof Node && !nav.contains(event.target) && !button.contains(event.target)) setOpen(false);
+    });
+    window.matchMedia('(max-width: 1030px)').addEventListener('change', () => setOpen(false));
+  }
+</script>

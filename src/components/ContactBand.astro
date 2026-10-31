@@ -1,0 +1,19 @@
+---
+import { site } from '../data/site';
+---
+<section class="contact-section" aria-labelledby="contact-heading">
+  <div class="wrap contact-grid">
+    <div>
+      <p class="section-kicker">Skontaktuj się</p>
+      <h2 id="contact-heading">Potrzebujesz lawety albo wyceny transportu?</h2>
+      <p>Zadzwoń — ustalimy, jak możemy pomóc i jakie będą warunki usługi.</p>
+      <a class="contact-phone" href={site.phoneHref}>{site.phoneDisplay}</a>
+    </div>
+    <div class="contact-alt">
+      <a href={site.facebook} target="_blank" rel="noopener noreferrer">Profil Facebook AlaTrans <span aria-hidden="true">↗</span><span class="sr-only"> (otwiera nową kartę)</span></a>
+      <span>Alternatywna forma kontaktu</span>
+      <p class="base-label">Baza lawety: Łącko</p>
+      <span>To baza sprzętu, nie punkt obsługi klienta. W razie awarii zadzwoń — ustalimy miejsce pomocy.</span>
+    </div>
+  </div>
+</section>
