@@ -37,7 +37,7 @@ Build tworzy `dist/`, sześć stron HTML, techniczne `404.html`, sitemap i zopty
 - `src/layouts/BaseLayout.astro`: SEO, JSON-LD i wspólna struktura.
 - `src/components/`: header, telefon mobile, kontakt, stopka i responsywne obrazy.
 - `src/styles/global.css`: tokeny i responsywny design zgodny z referencją.
-- `photos/`, `assets/`: autentyczne źródła; `public/`: zasoby publikowane bez przetwarzania.
+- `photos/` i `favicon/`: pojedyncze źródła zasobów. Hooki predev/prebuild/prepreview synchronizują wybrane pliki do ignorowanych public/photos i public/favicon; Astro przetwarza importy bezpośrednio ze źródeł. Unikalne starsze JPG i wizytówki pozostają w photos/ jako materiały źródłowe.
 - `reference/` i specyfikacja: materiały zatwierdzone przez właścicieli, nie są publikowane w `dist/`.
 
 ## Weryfikacja w przeglądarkach
@@ -67,5 +67,9 @@ Ostatni build przywraca wariant produkcyjny. Preview ma meta noindex, blokadę r
 - [Wyniki i ograniczenia testów](docs/WERYFIKACJA.md)
 - [PR, bezpieczna publikacja i rollback](docs/WDROZENIE.md)
 - [Gotowa treść PR](docs/PR_BODY.md)
+- [Zmiany UX/UI i potwierdzenia z iteracji 2](docs/ITERACJA_2.md)
+- [Audyt zasobów i checksumów](docs/ASSETS_ITERACJA_2.md)
 
 Nie dodawać Notes.txt, sekretów, plików .env, node_modules ani dist. Nie wykonywać merge do main ani publikacji produkcyjnej bez wyraźnej zgody właściciela.
+
+Bieżąca iteracja 2 jest wyłącznie lokalna: bez push, merge i publikacji. Potwierdzone dane oraz raport tej iteracji: docs/ITERACJA_2.md.

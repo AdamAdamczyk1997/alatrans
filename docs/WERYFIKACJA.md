@@ -1,68 +1,62 @@
-# Weryfikacja AlaTrans 2.0 — 31.10.2026
+# Weryfikacja AlaTrans 2.0 — iteracja 2, 1.11.2026
 
-## Build i kontrola statyczna
+Wyniki dotyczą kodu po dopracowaniu UX/UI, potwierdzeniu danych i uporządkowaniu zasobów. Zakres zmian: [ITERACJA_2.md](ITERACJA_2.md), lista plików: [ZMIANY.md](ZMIANY.md). Raport i screenshoty zastępują wyniki poprzedniej iteracji; historyczne materiały pozostają w commicie 172c85c.
+
+## Wymagane skrypty
 
 | Kontrola | Wynik |
 | --- | --- |
-| Astro check (23 pliki) | PASS, 0 błędów, 0 ostrzeżeń, 0 hints |
-| Build na Node 22.23.4 | PASS; oficjalne archiwum Node sprawdzone SHA-256 |
-| npm run build na lokalnym Node 26.8.1 | PASS |
-| Wygenerowane HTML | 6 stron + techniczne 404; sitemap oddzielnie |
-| npm test | PASS, 173 odnośniki/zasoby istnieją |
-| Metadane | 1 H1, unikalny title/description, canonical i absolutne OG na każdej z 6 stron |
-| Sitemap / robots / JSON-LD | PASS; sześć URL, rzeczowy LocalBusiness, bez AutoRepair/cen/opinii |
-| Wariant preview | PASS, meta noindex + robots Disallow + _headers X-Robots-Tag |
-| Przywrócony wariant produkcyjny | PASS, indeksowalny; bez noindex i bez _headers blokującego roboty |
-| Konfiguracja TOML | Poprawna; 7 przekierowań 301 JPG → istniejące WebP; bez SPA catch-all |
-| npm audit | 0 podatności |
-| Kontrola plików do commita | Bez Notes.txt, .env, sekretów, dist i node_modules |
+| npm run check | PASS, 26 plików, zero błędów/ostrzeżeń/hints |
+| npm run build | PASS, Astro static, sześć stron i techniczne 404 |
+| npm test | PASS, 176 odnośników/zasobów, dane firmy, kanały, sitemap/robots/SEO, unikalne ID i pięć sekcji |
+| npm run test:browser | PASS, Chromium + WebKit, 72 kombinacje, 19 nowych screenshotów |
+| npm run test:lighthouse | PASS, trzy pomiary mobile bez równoległego obciążenia |
+| npm audit | Zero podatności, bez dodawania zależności |
+| Dodatkowy build Node 22.23.4 | PASS: sync, Astro build, finalizacja indeksowania i ponowny npm test |
+| Preview noindex | PASS: rzeczywisty lokalny build PREVIEW_NOINDEX=true, test --preview |
+| Przywrócony wariant produkcyjny | PASS, brak noindex/blokady robots; ten wariant pozostaje w dist |
 
-Stare index.html/style.css/script.js usunięto dopiero po kompletnym buildzie i testach generatora. Materiały briefu zachowano bez edycji; końcowe spacje w pięciu liniach specyfikacji są oryginalnym formatowaniem Markdown. Kontrola whitespace kodu i nowych dokumentów przechodzi po wyłączeniu tego niezmienionego pliku źródłowego.
+npm build przetestowano na lokalnym Node 26.8.1, a dodatkowo całą generację i synchronizację na docelowym Node 22.23.4. Netlify TOML, dist jako publish i przypięte zależności pozostają bez zmian. Weryfikacja preview dotyczy wygenerowanych meta, robots.txt i _headers, nie panelu Netlify.
 
-## Przeglądarki, linki i interakcje
+## Przeglądarki i funkcje
 
-`docs/qa-browser.json`: **passed=true**, 72 kombinacje, zero błędów JS/konsoli i brak poziomego scrolla.
+Aktualny `qa-browser.json` ma passed=true, contract iteracji 2 i datę 1.11.2026. Wynik: **72 kombinacje** (6 stron × 320, 375, 390, 768, 1024, 1440 × Chromium 156.0.8078.4 / WebKit 27.2), zero błędów JS/konsoli i poziomego scrolla. Środowisko: locale pl-PL, DPR 1, reduced-motion.
 
-- Chromium 156.0.8078.4 oraz WebKit 27.2.
-- Sześć stron × szerokości 320, 375, 390, 768, 1024, 1440 px × dwa silniki.
-- Każda strona: HTTP 200, obrazy załadowane, jeden H1, prawidłowy tel:+48880887092 i aktywna pozycja menu.
-- Menu: Enter, Escape, ponowne kliknięcie, pięć pozycji, powrót fokusu i dostępny telefon.
-- Galeria: Enter, dekodowanie obrazu, Escape, przycisk zamknięcia i powrót fokusu do miniatury.
-- Sticky: widoczność, obszar dotykowy oraz brak zasłaniania końca stopki przy 320/375/390.
-- Lokalny serwer statyczny zwraca rzeczywiste 404 dla nieistniejącej strony.
-- Dodatkowy smoke test z wyłączonym JS przy 390: główna i galeria mają 200, pięć widocznych linków menu, brak overflow; galeria udostępnia pięć odnośników noscript.
+Sprawdzono statusy 200 oraz rzeczywiste lokalne 404, obrazy, pojedynczy H1, unikalne ID również w 404, aktywną nawigację i dokładne linki. Menu przechodzi Enter/Escape/kliknięcie i powrót fokusu. Galeria przechodzi Enter, Escape, zamknięcie i powrót fokusu do miniatury. Sticky pozostaje dostępny i nie zakrywa końca stopki.
 
-WebKit wymagał lokalnych bibliotek ABI wypakowanych z oficjalnych paczek Ubuntu do /tmp. Nie instalowano ich systemowo. Opcjonalny WEBKIT_EXECUTABLE_PATH umożliwia użycie wrappera w tym niestandardowym środowisku. Wynik dotyczy silników automatycznych, nie fizycznego Safari/iPhone.
+Nowe asercje potwierdzają pełną nazwę, adres i telefon w JSON-LD, hasMap/sameAs, nazwy w treści oraz stopce, jedną parę WhatsApp/Messenger na każdej stronie, pięć sekcji głównej, brak starych powtarzalnych bloków, identyczne style/hover/focus przycisków obu usług, opisany i leniwy iframe właściwej bazy. Na Kontakcie nie ma drugiego ContactBand.
 
-## Dostępność
+Dodatkowa punktowa kontrola tabletu przy 768 px: zdjęcie znajduje się pod tekstem, ma 640 px szerokości i właściwy sizes. Poprawiony układ obejrzano w przeglądarce; 390/1440 oraz 320/768 przeszły także niezależny przegląd wizualny.
 
-Axe uruchomiono **24 razy** (6 stron × 390/1440 × dwa silniki), nie 72 razy. Zero wykrytych violations WCAG A/AA. W 20 raportach pozostały pozycje incomplete color-contrast (łącznie 64 wskazania w różnych wariantach); nie ukryto ich w JSON.
+## Dostępność i kontrast
 
-Punktowa kontrola ręczna strony głównej w 390 i 1440 ustaliła: podpis zdjęcia ma 5,11:1 (#626e74 / #fcfcfa), strzałki 15,89:1 na bieli i 14,78:1 na jasnoszarym tle. Axe myli zakres pseudo-elementu dekoracyjnego z tłem podpisu. Żółte tło kończy się przed podpisem. Symbole ✓ są redundantną dekoracją aria-hidden, z kontrastem 4,30:1 na bieli. Nie niosą samodzielnej informacji. Pozostałe niepewne wskazania dotyczą symboli/strzałek. Widoczny focus, etykiety, kolejność nagłówków i obsługa klawiatury zostały sprawdzone w kodzie oraz testach. Nie jest to pełny audyt ani deklaracja certyfikacji WCAG.
+Axe uruchomiono **24 razy** (6 stron × 390/1440 × dwa silniki): zero wykrytych violations WCAG A/AA. Pozostało 20 grup incomplete color-contrast, łącznie 60 wskazań w wariantach; są zachowane w raporcie. Automatyczny wynik nie jest pełną certyfikacją WCAG. Istniejące symbole/strzałki i dekoracje wymagają interpretacji, a zewnętrzny komponent Google nie jest kontrolowany przez CSS serwisu.
+
+Dodatkowa kontrola par kolorów nowego UI z CSS znajduje się w `qa-contrast-iteracja-2.json`. Nagłówki obszaru: 13,06:1; jego opisy: 8,97:1; opis kontaktu: 9,13:1; etykiety komunikatorów: 12,60:1 na graficie i 15,89:1 na jasnym tle. Ikony WhatsApp/Messenger na bieli: 5,80:1 / 5,90:1. Wszystkie te pary przekraczają 4,5:1. Focus na ciemnych sekcjach ma jasny żółty obrys, a odnośniki posiadają nazwy i odpowiednie obszary klikania.
 
 ## Lighthouse mobile
 
-Końcowe **trzy sekwencyjne** przebiegi Lighthouse 13.5.0 na lokalnym statycznym preview strony głównej, bez równoległych testów przeglądarek. Domyślna symulacja mobile i throttling; pełne ustawienia oraz metryki w `qa-lighthouse.json`.
+Trzy kolejne pomiary strony głównej w Lighthouse 13.5.0 na statycznym localhost preview, po zamknięciu innych przeglądarek QA. Domyślna symulacja mobile/throttling; pełne ustawienia w `qa-lighthouse.json`.
 
-| Przebieg | Performance | Accessibility | Best Practices | SEO | LCP | CLS | TBT |
+| Próba | Performance | Accessibility | Best Practices | SEO | LCP | CLS | TBT |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| 1 | 97 | 100 | 100 | 100 | 1.36 s | 0 | 196 ms |
+| 1 | 100 | 100 | 100 | 100 | 1.37 s | 0 | 9 ms |
 | 2 | 100 | 100 | 100 | 100 | 1.36 s | 0 | 0 ms |
-| 3 | 100 | 100 | 100 | 100 | 1.36 s | 0 | 0 ms |
+| 3 | 100 | 100 | 100 | 100 | 1.39 s | 0 | 0 ms |
 
-Cel audytowy Performance i Accessibility >=90 spełniony w każdym z tych trzech przebiegów. To wyniki laboratoryjne z localhost; nie są pomiarem realnego ruchu, INP ani gwarancją CWV po wdrożeniu.
+Wszystkie cztery kategorie mają 100 w każdym pomiarze; wymagane cele Performance/Accessibility >=90 są spełnione. To wyniki laboratoryjne głównej, nie pomiar realnych użytkowników, INP ani wydajności samej zewnętrznej mapy. Mapa ładuje się leniwie tylko na Kontakcie. Plik qa-lighthouse-initial.json jest historycznym pomiarem z pierwszej iteracji, nie aktualnym wynikiem.
 
-Wstępny pomiar uruchomiony podczas innych prac dawał 79/100/100 Performance (TBT pierwszej próby 924 ms). Zachowano go osobno w `qa-lighthouse-initial.json`, zamiast usuwać rozrzut. Dopiero końcowy pomiar wykonano bez równoległego obciążenia.
+Własny JS głównej pozostaje 765 B; galeria dokłada 668 B. Nowe kanały i ikony są statycznym HTML/SVG. Nie dodano bibliotek ani własnego JS do mapy. Google ładuje własne zasoby w iframe. Responsywne fotografie nadal generuje Astro; szeroki hero zachowuje eager/fetchpriority i jawne wymiary.
 
-Strona główna ma 765 B własnego JS menu; galeria dodaje 668 B. Brak runtime React i zewnętrznych skryptów marketingowych. Responsywne zdjęcie hero: 480 px ok. 27 kB, 800 px ok. 68 kB; eager i fetchpriority=high, jawne wymiary. Pozostałe obrazy poza pierwszym ekranem lazy.
+## Zasoby i bezpieczeństwo adresów
 
-## Screenshoty i porównanie referencji
+Pełny audyt SHA-256: [ASSETS_ITERACJA_2.md](ASSETS_ITERACJA_2.md) oraz manifest JSON. Niezależna końcowa kontrola potwierdziła 31/31 niezmienionych źródeł i referencji, 15/15 identycznych kopii w public i dist oraz siedem zachowanych redirectów JPG z istniejącymi celami. Usunięto wyłącznie 17 śledzonych duplikatów (4 846 562 B); unikalne źródła i historia Git pozostają. Hooki dev/build/preview odtwarzają stałe URL z jawnej allowlisty.
 
-19 końcowych PNG pochodzi z **WebKit 27.2**. Funkcjonalne 72 testy obejmują oba silniki. Capture jest odseparowany od scrollowania i axe; przed zdjęciem czeka na decode i malowanie. Chromium sporadycznie pomijało warstwę zdjęcia w długim PNG mimo poprawnego viewportu. Zmiana silnika capture rozwiązała problem; nie zmieniano CSS produktu dla tego artefaktu.
+## Nowe screenshoty
 
-Pełne 390 px ukrywają sticky WYŁĄCZNIE na czas zdjęcia, żeby nie zasłaniał środka długiego dokumentu. Osobne viewporty pokazują prawdziwy pasek fixed. Eager wymuszany w kontekście fotografowania nie zmienia realnego lazy loading strony.
+Wszystkie 19 PNG pochodzą z WebKit 27.2. Pełne 390 px ukrywają pasek telefonu tylko w fotografowanym kadrze; osobne viewporty pokazują prawdziwy sticky. Obrazy w kontekście capture ładowane są eager, bez zmiany rzeczywistego loading produktu.
 
-Porównano końcowy desktop/mobile z reference/: kolejność sekcji, jasne tła, kontener, typografia i przyciski zachowane; pełne 16:9 hero pokazuje platformę i kabinę. Na głównej brak galerii. Usunięte są dopiski demonstracyjne i górny baner makiety. Root i niezależny reviewer obejrzeli artefakty; pełny desktop oraz oba kadry mobile pokazują rzeczywiste zdjęcie.
+Capture mapy przewija ją do viewportu i czeka na rzeczywisty dokument Google, zakończenie przejścia ze statycznego podglądu, gotowe kafelki całej ramki i malowanie. Nie wymaga networkidle, bo Google utrzymuje własne żądania w tle. Nie używa makiety ani zastępczego obrazu mapy. Pełny Kontakt mobile i desktop obejrzano: mapa ma kompletne kafelki oraz właściwy pin. Szeroki hero i układ głównej również sprawdzono wizualnie.
 
 - [glowna-hero-390.png](screenshots/glowna-hero-390.png)
 - [glowna-390.png](screenshots/glowna-390.png)
@@ -84,13 +78,10 @@ Porównano końcowy desktop/mobile z reference/: kolejność sekcji, jasne tła,
 - [o-firmie-1440.png](screenshots/o-firmie-1440.png)
 - [kontakt-1440.png](screenshots/kontakt-1440.png)
 
-## Ograniczenia i odbiór przed produkcją
+## Potwierdzenia i ograniczenia
 
-- Brak autoryzacji zapisu GitHub/Netlify: nie utworzono zdalnego PR ani Deploy Preview. Statusy i nagłówki na prawdziwym Netlify wymagają kontroli po otwarciu PR; lokalny test 404 nie dowodzi routingu podglądu.
-- Prawidłowe href telefonu sprawdzone programowo. Połączenie i dialer trzeba sprawdzić na fizycznym telefonie.
-- Facebook HTTP 200 przekierowuje do profilu Artur Adamczyk. Tożsamość biznesowa i rozmowa Messenger wymagają potwierdzenia właściciela; UI nie obiecuje bezpośredniego otwarcia rozmowy.
-- Mapa Google HTTP 200 wskazuje AlaTrans, lecz pełny adres nie jest potwierdzony. Publiczny UI pomija mapę i dokładny adres.
-- Nazwa prawna, adres, zgody na fotografie i parametry sprzętu wymagają decyzji właściciela. Niepotwierdzone usługi są pominięte.
-- JSON-LD ma tylko potwierdzoną miejscowość/PL; nie zadeklarowano niezweryfikowanej ulicy ani kodu. Nie wykonano zewnętrznego Google Rich Results Test i nie gwarantuje się kwalifikacji do rich results.
-- Nadal działa drugi, stary adres GitHub Pages. Nie zmieniono jego integracji; ryzyko przyszłego merge opisano w AUDYT.md i WDROZENIE.md.
-- Brak zmian produkcyjnych, DNS/domeny i panelu projektu Netlify. Odbiór, wyraźna zgoda, merge i kontrola live są osobnym etapem.
+Nazwa i adres, telefon oraz WhatsApp/Messenger zostały potwierdzone przez właściciela w nowym briefie. Routing nowych linków odczytano HTTP; Google Maps potwierdził miejsce, adres, telefon i pin, następnie rzeczywisty render iframe. Szczegóły identyfikatorów i źródeł są w ITERACJA_2.md. Nie wysyłano wiadomości ani nie inicjowano połączeń. Meta może wymagać logowania i odmawiać części automatycznych odczytów.
+
+Do osobnego odbioru pozostają fizyczny telefon/Safari, rzeczywisty Netlify Deploy Preview i jego nagłówki, zgody na fotografie oraz ewentualna anonimizacja. Parametry sprzętu, niepotwierdzone usługi i opinie nadal pominięto. Nie wykonano zewnętrznego Google Rich Results Test ani pomiaru produkcyjnych CWV.
+
+Wszystkie wymagane skrypty wykonano. Nie wykonywano push, merge, publikacji ani zmian DNS/domen/SeoHost/Netlify. Lokalny main nadal c8ac902; produkcja alatrans.pl nie była modyfikowana. Niezwiązane dokumenty użytkownika pozostały bez zmian, Notes.txt i poświadczenia nie były odczytywane ani dodawane do Git.

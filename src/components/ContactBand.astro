@@ -1,19 +1,18 @@
 ---
 import { site } from '../data/site';
+import ContactChannels from './ContactChannels.astro';
 ---
 <section class="contact-section" aria-labelledby="contact-heading">
   <div class="wrap contact-grid">
-    <div>
-      <p class="section-kicker">Skontaktuj się</p>
-      <h2 id="contact-heading">Potrzebujesz lawety albo wyceny transportu?</h2>
-      <p>Zadzwoń — ustalimy, jak możemy pomóc i jakie będą warunki usługi.</p>
+    <div class="contact-copy">
+      <h2 id="contact-heading">Potrzebujesz pomocy?</h2>
+      <p>Zadzwoń w sprawie pomocy drogowej lub wyceny transportu. Ustalimy, jak możemy pomóc.</p>
       <a class="contact-phone" href={site.phoneHref}>{site.phoneDisplay}</a>
     </div>
-    <div class="contact-alt">
-      <a href={site.facebook} target="_blank" rel="noopener noreferrer">Profil Facebook AlaTrans <span aria-hidden="true">↗</span><span class="sr-only"> (otwiera nową kartę)</span></a>
-      <span>Alternatywna forma kontaktu</span>
-      <p class="base-label">Baza lawety: Łącko</p>
-      <span>To baza sprzętu, nie punkt obsługi klienta. W razie awarii zadzwoń — ustalimy miejsce pomocy.</span>
+    <div class="contact-write">
+      <p>Lub napisz do nas:</p>
+      <ContactChannels />
+      <a class="contact-details-link" href="/kontakt/">Pełne dane i lokalizacja <span aria-hidden="true">→</span></a>
     </div>
   </div>
 </section>

@@ -1,0 +1,16 @@
+---
+import { site } from '../data/site';
+import ChannelIcon from './ChannelIcon.astro';
+---
+<div class="contact-channels" role="group" aria-label="Napisz do AlaTrans">
+  <a class="channel-link" href={site.whatsapp} target="_blank" rel="noopener noreferrer">
+    <span class="channel-icon whatsapp"><ChannelIcon channel="whatsapp" /></span>
+    WhatsApp<span class="sr-only"> — napisz do AlaTrans (otwiera nową kartę)</span>
+    <span class="channel-arrow" aria-hidden="true">↗</span>
+  </a>
+  <a class="channel-link" href={site.messenger} target="_blank" rel="noopener noreferrer">
+    <span class="channel-icon messenger"><ChannelIcon channel="messenger" /></span>
+    Messenger<span class="sr-only"> — napisz do AlaTrans (otwiera nową kartę)</span>
+    <span class="channel-arrow" aria-hidden="true">↗</span>
+  </a>
+</div>

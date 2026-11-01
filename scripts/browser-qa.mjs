@@ -8,6 +8,16 @@ import AxeBuilder from '@axe-core/playwright';
 const dist = resolve('dist');
 const routes = ['/', '/pomoc-drogowa/', '/transport-pojazdow/', '/realizacje/', '/o-firmie/', '/kontakt/'];
 const widths = [320, 375, 390, 768, 1024, 1440];
+const confirmed = {
+  companyName: 'AlaTrans – P.P.H.U. Artur Adamczyk',
+  whatsapp: 'https://wa.me/48880887092',
+  messenger: 'https://m.me/61574526132487',
+  facebook: 'https://www.facebook.com/61574526132487/',
+  map: 'https://maps.app.goo.gl/wpTjFzKYmChzWnn86',
+  mapEmbed: 'https://www.google.com/maps/embed?origin=mfe&pb=!1m3!3m2!1m1!4s11387420831993348612',
+  address: 'Łącko 984, 33-390 Łącko',
+};
+const homeSections = ['hero', 'home-services', 'home-area', 'home-about', 'contact-section'];
 const screenshots = resolve('docs/screenshots');
 const screenshotsOnly = process.argv.includes('--screenshots-only');
 const reportPath = resolve('docs/qa-browser.json');
@@ -30,12 +40,14 @@ await new Promise((done) => server.listen(0, '127.0.0.1', done));
 const origin = `http://127.0.0.1:${server.address().port}`;
 const report = screenshotsOnly ? JSON.parse(readFileSync(reportPath, 'utf8')) : {
   testedAt: new Date().toISOString(),
+  testContract: 'AlaTrans 2.0 — iteracja 2: potwierdzone dane, kanały kontaktu i pięć sekcji głównej',
+  browserContext: { locale: 'pl-PL', reducedMotion: 'reduce', deviceScaleFactor: 1 },
   target: 'lokalny build dist, serwer statyczny z rzeczywistym statusem 404',
-  limitations: ['WebKit Playwright nie zastępuje Safari na fizycznym iPhonie.', 'Nie wykonuje połączeń telefonicznych ani rozmów Messenger.', 'Nie potwierdza nagłówków i routingu rzeczywistego Deploy Preview Netlify.', 'Pełne screenshoty 390 px celowo ukrywają przypięty pasek telefonu, aby nie zasłaniał treści w długim obrazie. Osobne screenshoty viewport 390 px pokazują jego naturalne położenie; testy interakcji i stopki zachowują widoczny pasek.'],
+  limitations: ['WebKit Playwright nie zastępuje Safari na fizycznym iPhonie.', 'Nie wykonuje połączeń ani nie wysyła wiadomości WhatsApp i Messenger; konta i wskazane bezpośrednie linki potwierdził właściciel.', 'Nie potwierdza nagłówków i routingu rzeczywistego Deploy Preview Netlify.', 'Pełne screenshoty 390 px celowo ukrywają przypięty pasek telefonu, aby nie zasłaniał treści w długim obrazie. Osobne screenshoty viewport 390 px pokazują jego naturalne położenie; testy interakcji i stopki zachowują widoczny pasek.'],
   browsers: [], pages: [], interactions: [], screenshots: [], errors: [],
 };
 const browsers = [];
-const captureMethod = 'WebKit Playwright w osobnym procesie i świeżym kontekście dla każdego kadru, bez przewijania i axe; obrazy eager wyłącznie w tym kontekście, decode + fonty + dwa RAF + stabilizacja. Najpierw viewport, potem full-page. Full-page 390 px ukrywa wyłącznie pasek mobile-cta; viewport zachowuje naturalny fixed. Silnik WebKit omija zaobserwowany artefakt rasteryzacji hero w pełnych zrzutach Chromium.';
+const captureMethod = 'Osobny proces WebKit Playwright i świeży kontekst każdej fotografowanej strony, bez testów fokusu i axe. Kontakt przewijany do rzeczywistej lazy mapy; capture czeka na DOM Google, komplet widocznych kafelków z potwierdzonym miejscem, zakończenie przejścia ze statycznego podglądu oraz fonty i malowanie — bez networkidle Google. Obrazy eager wyłącznie w kontekście capture, decode + fonty + dwa RAF + stabilizacja. Najpierw viewport, potem full-page. Full-page 390 px ukrywa wyłącznie pasek mobile-cta; viewport zachowuje naturalny fixed. WebKit omija zaobserwowany artefakt rasteryzacji hero w pełnych zrzutach Chromium.';
 let screenshotBrowser;
 
 async function getScreenshotBrowser() {
@@ -60,6 +72,15 @@ async function stabilizePaint(page, delay = 125) {
   }, delay);
 }
 
+async function waitForAppReady(page) {
+  // A third-party map can keep making requests after the application's DOM is ready.
+  await page.waitForFunction(() => {
+    const button = document.querySelector('.menu-button');
+    const navigation = document.querySelector('#site-navigation');
+    return button && !button.hidden && navigation?.classList.contains('is-enhanced');
+  }, null, { timeout: 15000 });
+}
+
 async function settleImages(page) {
   // Exercise native lazy loading before full-page screenshots and image assertions.
   await page.evaluate(async () => {
@@ -73,16 +94,57 @@ async function settleImages(page) {
   await stabilizePaint(page);
 }
 
+async function waitForMapPaint(page) {
+  const map = page.locator('#baza iframe');
+  await map.scrollIntoViewIfNeeded();
+  const handle = await map.elementHandle();
+  const frame = await handle.contentFrame();
+  assert(frame, 'Screenshot Kontakt: prawdziwa ramka mapy');
+  await frame.waitForURL((url) => url.hostname === 'www.google.com' && url.pathname === '/maps/embed', { waitUntil: 'domcontentloaded', timeout: 20000 });
+  await frame.waitForFunction(() => {
+    const visible = (element) => {
+      const rect = element.getBoundingClientRect();
+      if (rect.width <= 0 || rect.height <= 0 || rect.right <= 0 || rect.bottom <= 0 || rect.left >= innerWidth || rect.top >= innerHeight) return false;
+      for (let parent = element; parent; parent = parent.parentElement) {
+        const style = getComputedStyle(parent);
+        if (style.display === 'none' || style.visibility === 'hidden' || Number(style.opacity) === 0) return false;
+      }
+      return true;
+    };
+    const tiles = [...document.images].filter((image) => {
+      try { return new URL(image.src).pathname === '/maps/vt' && image.complete && image.naturalWidth >= 128 && visible(image); }
+      catch { return false; }
+    });
+    // The selected place and its pin are rasterized in Google's POI tiles.
+    // Inspect the confirmed public place ID, not translated labels or private marker markup.
+    const selectedPlace = tiles.some((image) => image.src.includes('11387420831993348612'));
+    const rects = tiles.map((image) => image.getBoundingClientRect());
+    const coverage = [.05, .25, .5, .75, .95].every((x) => [.05, .25, .5, .75, .95].every((y) => rects.some((rect) => rect.left <= innerWidth * x && rect.right >= innerWidth * x && rect.top <= innerHeight * y && rect.bottom >= innerHeight * y)));
+    const staticPreview = [...document.images].some((image) => image.src.includes('StaticMapService.GetMapImage') && visible(image));
+    return selectedPlace && coverage && !staticPreview;
+  }, null, { polling: 100, timeout: 30000 });
+  await frame.evaluate(async () => {
+    await document.fonts.ready;
+    await Promise.all([...document.images].filter((image) => {
+      try { return new URL(image.src).pathname === '/maps/vt' && image.complete && image.naturalWidth > 0; }
+      catch { return false; }
+    }).map((image) => image.decode()));
+    await new Promise((done) => requestAnimationFrame(() => requestAnimationFrame(done)));
+  });
+}
+
 async function captureScreenshots(browser, route, width) {
   // Keep capture independent from scrolling, focus tests and accessibility tooling.
-  const context = await browser.newContext({ viewport: { width, height: width < 768 ? 844 : 900 }, deviceScaleFactor: 1, reducedMotion: 'reduce' });
+  const context = await browser.newContext({ viewport: { width, height: width < 768 ? 844 : 900 }, locale: 'pl-PL', deviceScaleFactor: 1, reducedMotion: 'reduce' });
   const files = [];
   try {
     const page = await context.newPage();
-    const response = await page.goto(`${origin}${route}`, { waitUntil: 'networkidle' });
+    const response = await page.goto(`${origin}${route}`, { waitUntil: 'domcontentloaded' });
     assert.equal(response.status(), 200, `Screenshot ${route}: status 200`);
+    await waitForAppReady(page);
     await page.evaluate(() => { for (const img of document.images) img.loading = 'eager'; });
     await page.waitForFunction(() => [...document.images].filter((img) => img.getAttribute('src') || img.currentSrc).every((img) => img.complete), null, { timeout: 15000 });
+    if (route === '/kontakt/') await waitForMapPaint(page);
     await stabilizePaint(page, 200);
     const slug = route === '/' ? 'glowna' : route.split('/').filter(Boolean)[0];
     const viewportFile = route === '/' ? `glowna-hero-${width}.png` : width === 390 ? `${slug}-viewport-${width}.png` : null;
@@ -145,6 +207,56 @@ async function testGallery(page, label) {
   report.interactions.push({ label, test: 'gallery Enter / image / Escape / close / focus return', passed: true });
 }
 
+async function testContactChannels(page, route, label) {
+  const channels = page.locator('.contact-channels');
+  assert.equal(await channels.count(), 1, `${label}: jeden blok komunikatorów`);
+  assert.deepEqual(await channels.locator('a').evaluateAll((links) => links.map((link) => link.getAttribute('href'))), [confirmed.whatsapp, confirmed.messenger], `${label}: bezpośrednie, zatwierdzone linki WhatsApp i Messenger`);
+  for (const [href, name] of [[confirmed.whatsapp, 'WhatsApp'], [confirmed.messenger, 'Messenger']]) {
+    const link = channels.locator(`a[href="${href}"]`);
+    assert.equal(await page.locator(`a[href="${href}"]`).count(), 1, `${label}: kanał ${name} bez powtórzeń`);
+    assert.match(await link.innerText(), new RegExp(name), `${label}: czytelna nazwa ${name}`);
+    assert(/(?:^|\s)noopener(?:\s|$)/.test(await link.getAttribute('rel') || ''), `${label}: bezpieczny link ${name}`);
+    const box = await link.boundingBox();
+    assert(box && box.width >= 44 && box.height >= 44, `${label}: dostępny obszar ${name}`);
+  }
+  assert.equal(await page.locator('main .contact-section').count(), route === '/kontakt/' ? 0 : 1, `${label}: pas kontaktowy bez powtórzenia na Kontakcie`);
+  if (route === '/kontakt/') {
+    const base = page.locator('section#baza');
+    assert.equal(await base.count(), 1, `${label}: jednoznaczna sekcja bazy`);
+    assert((await base.locator('address').innerText()).replace(/\s+/g, ' ').trim() === confirmed.address, `${label}: pełny zatwierdzony adres`);
+    for (const href of [confirmed.facebook, confirmed.map]) assert.equal(await page.locator(`main a[href="${href}"]`).count(), 1, `${label}: zatwierdzony link ${href}`);
+    const frame = base.locator('iframe');
+    assert.equal(await frame.count(), 1, `${label}: jedna mapa`);
+    assert.equal(await frame.getAttribute('src'), confirmed.mapEmbed, `${label}: potwierdzony identyfikator osadzonej lokalizacji`);
+    assert.equal(await frame.getAttribute('loading'), 'lazy', `${label}: mapa ładowana leniwie`);
+    assert((await frame.getAttribute('title') || '').length >= 10, `${label}: opisowy tytuł mapy`);
+  }
+}
+
+async function testServiceChoices(page, label) {
+  const choices = page.locator('main .choices > a.choice');
+  assert.equal(await choices.count(), 2, `${label}: dwa przyciski wyboru usługi`);
+  assert.deepEqual(await choices.evaluateAll((links) => links.map((link) => link.getAttribute('href'))), ['/pomoc-drogowa/', '/transport-pojazdow/'], `${label}: rzeczywiste ścieżki obu usług`);
+  const styles = await choices.evaluateAll((links) => links.map((link) => {
+    const style = getComputedStyle(link);
+    return Object.fromEntries(['backgroundColor', 'color', 'height', 'minHeight', 'borderWidth', 'borderStyle', 'borderColor', 'borderRadius', 'fontSize', 'fontWeight', 'paddingTop', 'paddingBottom'].map((property) => [property, style[property]]));
+  }));
+  assert.deepEqual(styles[0], styles[1], `${label}: identyczny wygląd równorzędnych przycisków usług`);
+  assert.notEqual(styles[0].backgroundColor, styles[0].color, `${label}: czytelne przyciski usług`);
+  const interactionStyles = [];
+  for (let index = 0; index < 2; index++) {
+    const choice = choices.nth(index);
+    await choice.hover();
+    await choice.focus();
+    interactionStyles.push(await choice.evaluate((link) => {
+      const style = getComputedStyle(link);
+      return Object.fromEntries(['backgroundColor', 'color', 'outlineStyle', 'outlineWidth', 'outlineColor', 'outlineOffset', 'boxShadow', 'translate'].map((property) => [property, style[property]]));
+    }));
+  }
+  assert.deepEqual(interactionStyles[0], interactionStyles[1], `${label}: spójne hover i focus usług`);
+  await page.evaluate(() => { if (document.activeElement instanceof HTMLElement) document.activeElement.blur(); scrollTo(0, 0); });
+}
+
 try {
   if (screenshotsOnly) {
     const browser = await getScreenshotBrowser();
@@ -164,7 +276,7 @@ try {
     browsers.push(browser);
     report.browsers.push({ name, version: browser.version() });
     for (const width of widths) {
-      const context = await browser.newContext({ viewport: { width, height: width < 768 ? 844 : 900 }, deviceScaleFactor: 1, reducedMotion: 'reduce' });
+      const context = await browser.newContext({ viewport: { width, height: width < 768 ? 844 : 900 }, locale: 'pl-PL', deviceScaleFactor: 1, reducedMotion: 'reduce' });
       const page = await context.newPage();
       const runtimeErrors = [];
       page.on('pageerror', (error) => runtimeErrors.push(error.message));
@@ -172,8 +284,9 @@ try {
       for (const route of routes) {
         const label = `${name} ${width}px ${route}`;
         runtimeErrors.length = 0;
-        const response = await page.goto(`${origin}${route}`, { waitUntil: 'networkidle' });
+        const response = await page.goto(`${origin}${route}`, { waitUntil: 'domcontentloaded' });
         assert.equal(response.status(), 200, `${label}: status 200`);
+        await waitForAppReady(page);
         await settleImages(page);
         const metrics = await page.evaluate(() => ({
           viewport: innerWidth,
@@ -182,12 +295,27 @@ try {
           h1: document.querySelectorAll('h1').length,
           phones: [...document.querySelectorAll('a[href^="tel:"]')].map((a) => a.getAttribute('href')),
           activeMenu: [...document.querySelectorAll('#site-navigation a[aria-current="page"]')].map((a) => a.getAttribute('href')),
+          duplicateIds: [...document.querySelectorAll('[id]')].map((element) => element.id).filter((id, index, ids) => ids.indexOf(id) !== index),
+          footerText: (document.querySelector('footer')?.innerText || '').replace(/\s+/g, ' '),
+          mainText: (document.querySelector('main')?.innerText || '').replace(/\s+/g, ' '),
+          homeSectionClasses: [...document.querySelectorAll('main > section')].map((section) => [...section.classList]),
+          retiredHomeBlocks: document.querySelectorAll('.divider-strip, .step-grid, .gallery-open, #gallery-dialog').length,
         }));
         assert(metrics.width <= metrics.viewport + 1, `${label}: poziomy overflow ${metrics.width}/${metrics.viewport}`);
         assert.deepEqual(metrics.brokenImages, [], `${label}: załadowane obrazy`);
         assert.equal(metrics.h1, 1, `${label}: jeden H1`);
         assert(metrics.phones.length > 0 && metrics.phones.every((href) => href === 'tel:+48880887092'), `${label}: telefon`);
         assert.deepEqual(metrics.activeMenu, route === '/' ? [] : [route], `${label}: aktywne menu`);
+        assert.deepEqual(metrics.duplicateIds, [], `${label}: brak duplikatów ID`);
+        assert(metrics.footerText.includes(confirmed.companyName), `${label}: pełna nazwa przedsiębiorcy w stopce`);
+        if (route === '/kontakt/' || route === '/o-firmie/') assert(metrics.mainText.includes(confirmed.companyName), `${label}: nazwa firmy w treści`);
+        if (route === '/') {
+          assert.deepEqual(metrics.homeSectionClasses.map((classes) => homeSections.find((name) => classes.includes(name))), homeSections, `${label}: dokładnie pięć sekcji w zatwierdzonej kolejności`);
+          assert.equal(metrics.retiredHomeBlocks, 0, `${label}: brak powtarzalnych sekcji i galerii na głównej`);
+          assert.equal((await page.locator('h1').innerText()).replace(/\s+/g, ' '), 'Pomoc drogowa 24/7 – holowanie i transport pojazdów', `${label}: zachowany dokładny H1`);
+        }
+        await testContactChannels(page, route, label);
+        if (route === '/' || route === '/o-firmie/') await testServiceChoices(page, label);
         await testMenu(page, label);
         if (route === '/realizacje/' && [390, 1440].includes(width)) await testGallery(page, label);
         if (width < 768) {
@@ -215,7 +343,7 @@ try {
         if (name === 'chromium' && [390, 1440].includes(width)) {
           report.screenshots.push(...await captureScreenshots(await getScreenshotBrowser(), route, width));
         }
-        report.pages.push({ browser: name, width, route, status: response.status(), overflow: false, images: 'loaded', consoleErrors: [], accessibility });
+        report.pages.push({ browser: name, width, route, status: response.status(), overflow: false, images: 'loaded', duplicateIds: [], contactChannels: 'phone + confirmed WhatsApp + Messenger', companyData: 'confirmed full name and address', homeSections: route === '/' ? homeSections : null, consoleErrors: [], accessibility });
         console.log(`PASS ${label}`);
       }
       await context.close();

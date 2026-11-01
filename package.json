@@ -8,8 +8,11 @@
     "npm": ">=9.6.5"
   },
   "scripts": {
+    "predev": "node scripts/sync-public-assets.mjs",
     "dev": "astro dev --host 127.0.0.1",
+    "prebuild": "node scripts/sync-public-assets.mjs",
     "build": "astro build",
+    "prepreview": "node scripts/sync-public-assets.mjs",
     "preview": "astro preview --host 127.0.0.1",
     "check": "astro check",
     "test": "node scripts/check-build.mjs",

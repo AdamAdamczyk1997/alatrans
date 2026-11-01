@@ -5,20 +5,24 @@ import SiteFooter from '../components/SiteFooter.astro';
 import MobileCallBar from '../components/MobileCallBar.astro';
 import ContactBand from '../components/ContactBand.astro';
 import { site } from '../data/site';
-interface Props { title: string; description: string; noindex?: boolean; }
-const { title, description, noindex = false } = Astro.props;
+interface Props { title: string; description: string; noindex?: boolean; showContactBand?: boolean; }
+const { title, description, noindex = false, showContactBand = true } = Astro.props;
 const canonical = new URL(Astro.url.pathname, site.url).href;
 const preview = process.env.PREVIEW_NOINDEX === 'true' || ['deploy-preview', 'branch-deploy'].includes(process.env.CONTEXT ?? '');
 const structuredData = {
   '@context': 'https://schema.org',
   '@type': 'LocalBusiness',
   '@id': `${site.url}/#business`,
-  name: site.name,
+  name: site.companyName,
+  alternateName: site.name,
+  legalName: site.legalName,
   url: `${site.url}/`,
   telephone: site.phone,
   image: `${site.url}/photos/laweta_car_4.webp`,
   logo: `${site.url}/photos/logo.png`,
-  address: { '@type': 'PostalAddress', addressLocality: 'Łącko', addressCountry: 'PL' },
+  address: { '@type': 'PostalAddress', streetAddress: site.address.street, addressLocality: site.address.locality, postalCode: site.address.postalCode, addressCountry: site.address.country },
+  hasMap: site.map,
+  sameAs: [site.facebook],
   description: 'Pomoc drogowa 24/7 w Łącku i okolicach oraz uzgadniany indywidualnie transport pojazdów po Polsce i samochodów z Niemiec.',
   openingHoursSpecification: [{ '@type': 'OpeningHoursSpecification', dayOfWeek: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'], opens: '00:00', closes: '23:59', description: 'Całodobowy kontakt w sprawie pomocy drogowej' }],
   hasOfferCatalog: { '@type': 'OfferCatalog', name: 'Usługi AlaTrans', itemListElement: [
@@ -54,7 +58,7 @@ const structuredData = {
   </head>
   <body>
     <SiteHeader />
-    <main id="main-content" tabindex="-1"><slot /><ContactBand /></main>
+    <main id="main-content" tabindex="-1"><slot />{showContactBand && <ContactBand />}</main>
     <SiteFooter />
     <MobileCallBar />
   </body>

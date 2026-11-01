@@ -1,6 +1,6 @@
 import car1 from '../../photos/laweta_car_1.webp';
 import car3 from '../../photos/laweta_car_3.webp';
-import car4 from '../../assets/laweta_car_4.webp';
+import car4 from '../../photos/laweta_car_4.webp';
 import car5 from '../../photos/laweta_car_5.webp';
 import car7 from '../../photos/laweta_car_7.webp';
 

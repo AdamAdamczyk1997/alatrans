@@ -1,5 +1,7 @@
 # AlaTrans 2.0 — faza 0, 31.10.2026
 
+> Raport historyczny pierwszej iteracji. Potwierdzenia firmy, adresu i kanałów kontaktu z 1.11.2026 zastępują dawne ograniczenia; aktualny stan: ITERACJA_2.md i WERYFIKACJA.md.
+
 ## Stan potwierdzony przed implementacją
 
 - Repo: `AdamAdamczyk1997/alatrans`, gałąź domyślna i produkcyjna `main`.

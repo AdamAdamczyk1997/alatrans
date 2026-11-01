@@ -1,30 +1,29 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import VehiclePhoto from '../../components/VehiclePhoto.astro';
+import { site } from '../../data/site';
 ---
 
 <BaseLayout
   title="O firmie — AlaTrans z Łącka"
-  description="AlaTrans to lokalna firma z Łącka. Pomoc drogowa 24/7 i transport pojazdów, bezpośredni kontakt oraz indywidualne ustalenie warunków zlecenia."
+  description="AlaTrans – P.P.H.U. Artur Adamczyk z Łącka. Pomoc drogowa 24/7 i transport pojazdów. Bezpośredni kontakt i indywidualne ustalenie warunków zlecenia."
 >
   <section class="page-intro">
     <div class="wrap prose">
-      <p class="section-kicker">Lokalnie, bezpośrednio</p>
       <h1>O firmie AlaTrans</h1>
-      <p class="lead">Jesteśmy małą firmą z Łącka. Zajmujemy się pomocą drogową i transportem pojazdów. Stawiamy na bezpośredni kontakt i jasne ustalenie zakresu usługi.</p>
+      <p class="lead">{site.companyName} to lokalna firma z Łącka. Zajmujemy się pomocą drogową i transportem pojazdów. Stawiamy na bezpośredni kontakt i jasne ustalenie zakresu usługi.</p>
     </div>
   </section>
 
   <section class="section soft" aria-labelledby="dwa-filary">
     <div class="wrap about-grid">
       <div class="prose">
-        <p class="section-kicker">Dwa filary naszej pracy</p>
         <h2 id="dwa-filary">Pomoc na drodze i zaplanowany przewóz</h2>
         <p>W ramach pomocy drogowej działamy całodobowo w Łącku, Nowym Sączu, Starym Sączu i okolicach. Pomagamy przy unieruchomionych pojazdach i realizujemy holowanie.</p>
         <p>Transport pojazdów ustalamy z wyprzedzeniem. Przewozimy pojazdy w Polsce oraz samochody z Niemiec, po omówieniu trasy i warunków zlecenia.</p>
         <div class="choices">
           <a class="choice primary" href="/pomoc-drogowa/">Pomoc drogowa <span aria-hidden="true">→</span></a>
-          <a class="choice secondary" href="/transport-pojazdow/">Transport pojazdów <span aria-hidden="true">→</span></a>
+          <a class="choice primary" href="/transport-pojazdow/">Transport pojazdów <span aria-hidden="true">→</span></a>
         </div>
       </div>
       <figure>
@@ -37,7 +36,6 @@ import VehiclePhoto from '../../components/VehiclePhoto.astro';
   <section class="section" aria-labelledby="jasne-ustalenia">
     <div class="wrap content-grid">
       <div class="prose">
-        <p class="section-kicker">Sposób współpracy</p>
         <h2 id="jasne-ustalenia">Zaczynamy od rozmowy</h2>
         <p>Przed realizacją ustalamy lokalizację, rodzaj pojazdu, dostępność i indywidualną wycenę. Dzięki temu obie strony znają zakres i warunki usługi.</p>
         <a class="text-link" href="/kontakt/">Skontaktuj się z nami <span aria-hidden="true">→</span></a>

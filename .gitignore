@@ -27,3 +27,7 @@ dist/
 .netlify/
 test-results/
 playwright-report/
+
+# Generated public asset copies; sources: photos/ and favicon/
+/public/photos/
+/public/favicon/

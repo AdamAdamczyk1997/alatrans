@@ -1,5 +1,7 @@
 # Materiały i decyzje redakcyjne
 
+> Selekcja zdjęć z pierwszej iteracji pozostaje aktualna. Organizacja plików została uporządkowana w iteracji 2: photos/ i favicon/ są źródłami, publiczne kopie generuje skrypt. Pełny audyt checksumów i lista zmian: ASSETS_ITERACJA_2.md. Wzmianki o assets/ oraz pierwotnych public/photos poniżej opisują stan z 31.10.2026.
+
 Przeczytano całą specyfikację i HTML makiety (bez przenoszenia obrazów base64). Obejrzano cztery referencyjne screenshoty, oba assets, siedem zdjęć lawety i obie wizytówki. Pliki wejściowe pozostają bez zmian.
 
 `assets/laweta_car_4.webp` jest bitowo identyczny z `photos/laweta_car_4.webp` (1600×900). Także `assets/logo.png` i `photos/logo.png` są identyczne (5036×3583, biały prostokąt RGB). Nie zmieniano znaku, nie retuszowano zdjęć. Astro generuje mniejsze warianty WebP; oryginały pozostają w repo.
