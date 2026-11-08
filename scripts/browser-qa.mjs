@@ -55,11 +55,11 @@ const portraitGalleryIds = [
   'laweta-bialy-samochod-w-zimie-tyl',
 ];
 const verifiedGalleryAssetUrls = new Set();
-// An explicit output root keeps the previous responsiveness iteration's evidence intact.
-const outputDirectory = process.env.QA_OUTPUT_DIR ? resolve(process.env.QA_OUTPUT_DIR) : resolve('docs');
+// Keep generated QA evidence separate from historical documentation by default.
+const outputDirectory = process.env.QA_OUTPUT_DIR ? resolve(process.env.QA_OUTPUT_DIR) : resolve('.artifacts/qa');
 const artifactPath = (directory, filename) => relative(process.cwd(), join(directory, filename));
 const screenshots = join(outputDirectory, 'screenshots');
-const responsiveDirectory = join(outputDirectory, process.env.QA_OUTPUT_DIR ? 'responsive' : 'responsywnosc');
+const responsiveDirectory = join(outputDirectory, 'responsive');
 const afterScreenshots = resolve(responsiveDirectory, 'screenshots/after');
 const screenshotsOnly = process.argv.includes('--screenshots-only');
 const continueOnFailure = process.env.QA_CONTINUE_ON_FAILURE === 'true';

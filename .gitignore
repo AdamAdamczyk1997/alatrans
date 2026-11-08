@@ -39,3 +39,6 @@ playwright-report/
 /photos/realizacje/laweta-jasny-sedan-miniatura.webp
 /photos/realizacje/laweta-skorodowane-auto-na-platformie.webp
 /photos/realizacje/laweta-zardzewialy-samochod-zblizenie.webp
+
+# Generated QA reports and screenshots
+/.artifacts/

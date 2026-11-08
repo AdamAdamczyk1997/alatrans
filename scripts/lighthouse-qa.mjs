@@ -6,7 +6,7 @@ import lighthouse from 'lighthouse';
 
 const url = process.env.QA_URL || 'http://127.0.0.1:4321/';
 const port = Number(process.env.LIGHTHOUSE_PORT || 9223);
-const outputDirectory = resolve(process.env.QA_OUTPUT_DIR || 'docs');
+const outputDirectory = resolve(process.env.QA_OUTPUT_DIR || '.artifacts/qa');
 mkdirSync(outputDirectory, { recursive: true });
 const browser = await chromium.launch({ headless: true, args: [`--remote-debugging-port=${port}`] });
 try {
