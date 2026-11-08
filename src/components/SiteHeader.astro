@@ -3,41 +3,135 @@ import { Image } from 'astro:assets';
 import logo from '../../photos/logo.png';
 import { navigation, site } from '../data/site';
 import PhoneIcon from './PhoneIcon.astro';
+
 const current = Astro.url.pathname;
+const contentWidth = 'min(72.5rem, calc(100vw - 2 * clamp(1.125rem, 0.375rem + 3vw, 2rem)))';
+const logoSizes = [
+  `(max-width: 47.5em) min(5.75rem, calc(${contentWidth} * 0.45 - 0.75rem))`,
+  `min(7rem, calc(${contentWidth} * 0.45 - 0.75rem))`,
+].join(', ');
 ---
-<a class="skip-link" href="#main-content">Pomiń do treści</a>
+
+<a class="skip-link" href="#main-content">
+  Pomiń do treści
+</a>
 <header class="site-header">
   <div class="header-inner wrap">
-    <a class="brand" href="/" aria-label="AlaTrans — strona główna"><Image src={logo} alt="AlaTrans" width={144} widths={[144, 288]} sizes="(max-width: 760px) 115px, 144px" format="webp" loading="eager" /></a>
-    <button class="menu-button" type="button" aria-label="Otwórz menu" aria-expanded="false" aria-controls="site-navigation" hidden>
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+    <a class="brand" href="/" aria-label="AlaTrans — strona główna">
+      <Image
+        src={logo}
+        alt="AlaTrans"
+        width={144}
+        widths={[144, 288, 432, 576]}
+        sizes={logoSizes}
+        format="webp"
+        loading="eager"
+      />
+      <span class="brand-descriptor">Pomoc drogowa 24/7 · Transport pojazdów</span>
+    </a>
+    <button
+      class="menu-button"
+      type="button"
+      aria-label="Otwórz menu"
+      aria-expanded="false"
+      aria-controls="site-navigation"
+      hidden
+    >
+      <svg
+        width="22"
+        height="22"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="1.8"
+        aria-hidden="true"
+      >
+        <path d="M4 6h16M4 12h16M4 18h16" />
+      </svg>
     </button>
     <nav id="site-navigation" class="site-navigation" aria-label="Nawigacja główna">
-      {navigation.map(item => <a href={item.href} aria-current={current === item.href ? 'page' : undefined}>{item.label}</a>)}
+      {navigation.map((item) => (
+        <a href={item.href} aria-current={current === item.href ? 'page' : undefined}>
+          {item.label}
+        </a>
+      ))}
     </nav>
-    <a class="top-call" href={site.phoneHref} aria-label={`Zadzwoń: ${site.phoneDisplay}`}><PhoneIcon />{site.phoneDisplay}</a>
+    <a class="top-call" href={site.phoneHref} aria-label={`Zadzwoń: ${site.phoneDisplay}`}>
+      <PhoneIcon />
+      {site.phoneDisplay}
+    </a>
   </div>
 </header>
-<script>
-  const button = document.querySelector<HTMLButtonElement>('.menu-button');
-  const nav = document.querySelector<HTMLElement>('#site-navigation');
-  if (button && nav) {
-    button.hidden = false;
-    nav.classList.add('is-enhanced');
-    const setOpen = (open: boolean, restoreFocus = false) => {
-      button.setAttribute('aria-expanded', String(open));
-      button.setAttribute('aria-label', open ? 'Zamknij menu' : 'Otwórz menu');
-      nav.classList.toggle('is-open', open);
-      if (restoreFocus) button.focus();
-    };
-    button.addEventListener('click', () => setOpen(button.getAttribute('aria-expanded') !== 'true'));
-    document.addEventListener('keydown', event => {
-      if (event.key === 'Escape' && button.getAttribute('aria-expanded') === 'true') setOpen(false, true);
-    });
-    nav.querySelectorAll('a').forEach(link => link.addEventListener('click', () => setOpen(false)));
-    document.addEventListener('click', event => {
-      if (event.target instanceof Node && !nav.contains(event.target) && !button.contains(event.target)) setOpen(false);
-    });
-    window.matchMedia('(max-width: 1030px)').addEventListener('change', () => setOpen(false));
+<script is:inline>
+  {
+    const button = document.querySelector('.menu-button');
+    const nav = document.querySelector('#site-navigation');
+    const header = document.querySelector('.site-header');
+    if (button && nav && header) {
+      button.hidden = false;
+      nav.classList.add('is-enhanced');
+      const setOpen = (open, restoreFocus = false) => {
+        button.setAttribute('aria-expanded', String(open));
+        button.setAttribute('aria-label', open ? 'Zamknij menu' : 'Otwórz menu');
+        nav.classList.toggle('is-open', open);
+        if (restoreFocus) button.focus();
+      };
+      button.addEventListener('click', () =>
+        setOpen(button.getAttribute('aria-expanded') !== 'true'),
+      );
+      document.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape' && button.getAttribute('aria-expanded') === 'true')
+          setOpen(false, true);
+      });
+      nav
+        .querySelectorAll('a')
+        .forEach((link) => link.addEventListener('click', () => setOpen(false)));
+      document.addEventListener('click', (event) => {
+        if (
+          event.target instanceof Node &&
+          !nav.contains(event.target) &&
+          !button.contains(event.target)
+        )
+          setOpen(false);
+      });
+      let compact = getComputedStyle(button).display !== 'none';
+      const syncLayout = () => {
+        const nextCompact = getComputedStyle(button).display !== 'none';
+        if (nextCompact !== compact) {
+          const focused = document.activeElement;
+          setOpen(false);
+          if (nextCompact && focused && nav.contains(focused)) button.focus();
+          if (!nextCompact && focused === button) {
+            nav.querySelector('[aria-current="page"], a')?.focus();
+          }
+          compact = nextCompact;
+        }
+
+        // Only the controls row counts; the open navigation has its own scroll area.
+        const headerTop = header.getBoundingClientRect().top;
+        const controls = header.querySelectorAll('.brand, .top-call, .menu-button');
+        const bottom = Math.max(
+          0,
+          ...Array.from(controls)
+            .filter((control) => getComputedStyle(control).display !== 'none')
+            .map((control) => control.getBoundingClientRect().bottom - headerTop),
+        );
+        const height = `${Math.ceil(bottom)}px`;
+        if (header.style.getPropertyValue('--header-controls-height') !== height) {
+          header.style.setProperty('--header-controls-height', height);
+        }
+        const stickyHeight =
+          getComputedStyle(header).position === 'sticky'
+            ? Math.ceil(header.getBoundingClientRect().height)
+            : 0;
+        document.documentElement.style.setProperty('--site-header-height', `${stickyHeight}px`);
+      };
+      const layoutObserver = new ResizeObserver(syncLayout);
+      layoutObserver.observe(header);
+      layoutObserver.observe(button);
+      window.addEventListener('resize', syncLayout);
+      document.fonts.ready.then(syncLayout);
+      syncLayout();
+    }
   }
 </script>

@@ -4,15 +4,21 @@ import { site } from '../../data/site';
 ---
 
 <BaseLayout
-  title="Transport pojazdów — Polska i Niemcy | AlaTrans"
-  description="Transport samochodów osobowych, motocykli, quadów i wybranych maszyn w Polsce oraz samochodów z Niemiec. Ustal z AlaTrans zakres, termin i wycenę."
+  title="Transport pojazdów — w Polsce i za granicą | AlaTrans"
+  description="Transport samochodów osobowych, motocykli, quadów i wybranych maszyn w Polsce. Wybrane trasy zagraniczne uzgadniamy indywidualnie, zależnie od możliwości."
 >
   <section class="page-intro">
     <div class="wrap prose">
-      <h1>Transport pojazdów — Polska i samochody z Niemiec</h1>
-      <p class="lead">Planujesz przewóz pojazdu? Ustalimy miejsce odbioru i dostawy, termin oraz warunki transportu dopasowane do konkretnego zlecenia.</p>
+      <p class="section-kicker">Transport krajowy i zagraniczny</p>
+      <h1>Transport pojazdów — w Polsce i za granicą</h1>
+      <p class="lead">
+        Realizujemy przewozy pojazdów na terenie Polski oraz wybrane trasy zagraniczne. Każde
+        zlecenie ustalamy indywidualnie, dopasowując transport do potrzeb klienta.
+      </p>
       <div class="choices">
-        <a class="choice primary" href={site.phoneHref}>Zapytaj o wycenę: {site.phoneDisplay}</a>
+        <a class="choice primary" href={site.phoneHref}>
+          Zapytaj o wycenę: {site.phoneDisplay}
+        </a>
       </div>
     </div>
   </section>
@@ -26,12 +32,21 @@ import { site } from '../../data/site';
           <li>Motocykle i quady.</li>
           <li>Wybrane maszyny i sprzęt budowlany lub rolniczy.</li>
         </ul>
-        <p>Każde zlecenie dobieramy do możliwości lawety. Przed przyjęciem transportu ustalamy rodzaj pojazdu lub sprzętu oraz potrzebne parametry.</p>
+        <p>
+          Każde zlecenie dobieramy do możliwości lawety. Przed przyjęciem transportu ustalamy rodzaj
+          pojazdu lub sprzętu oraz potrzebne parametry.
+        </p>
       </div>
       <article class="detail-card">
-        <h2>Cała Polska. Samochody z Niemiec.</h2>
-        <p>Realizujemy przewozy na terenie Polski oraz transport samochodów z Niemiec w indywidualnie uzgodnionym zakresie.</p>
-        <p>Trasę, termin odbioru i warunki dostawy potwierdzamy podczas ustalania szczegółów zlecenia.</p>
+        <h2>Polska i wybrane trasy zagraniczne</h2>
+        <p>
+          Transport realizujemy na terenie Polski. Możliwość przewozu na wybranych trasach
+          zagranicznych rozpatrujemy indywidualnie, zależnie od zlecenia i możliwości firmy.
+        </p>
+        <p>
+          Trasę, termin odbioru i warunki dostawy potwierdzamy podczas ustalania szczegółów
+          zlecenia.
+        </p>
       </article>
     </div>
   </section>
@@ -49,8 +64,12 @@ import { site } from '../../data/site';
       </div>
       <aside class="callout" aria-labelledby="indywidualna-wycena">
         <h2 id="indywidualna-wycena">Cena dla Twojego zlecenia</h2>
-        <p>Wyceniamy transport indywidualnie po ustaleniu trasy, rodzaju pojazdu i warunków przewozu.</p>
-        <a class="text-link" href={site.phoneHref}>Zadzwoń: {site.phoneDisplay} <span aria-hidden="true">→</span></a>
+        <p>
+          Wyceniamy transport indywidualnie po ustaleniu trasy, rodzaju pojazdu i warunków przewozu.
+        </p>
+        <a class="text-link" href={site.phoneHref}>
+          Zadzwoń: {site.phoneDisplay} <span aria-hidden="true">→</span>
+        </a>
       </aside>
     </div>
   </section>

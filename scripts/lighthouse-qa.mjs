@@ -1,10 +1,13 @@
 import assert from 'node:assert/strict';
-import { writeFileSync } from 'node:fs';
+import { mkdirSync, writeFileSync } from 'node:fs';
+import { join, resolve } from 'node:path';
 import { chromium } from 'playwright';
 import lighthouse from 'lighthouse';
 
 const url = process.env.QA_URL || 'http://127.0.0.1:4321/';
 const port = Number(process.env.LIGHTHOUSE_PORT || 9223);
+const outputDirectory = resolve(process.env.QA_OUTPUT_DIR || 'docs');
+mkdirSync(outputDirectory, { recursive: true });
 const browser = await chromium.launch({ headless: true, args: [`--remote-debugging-port=${port}`] });
 try {
   const results = [];
@@ -20,7 +23,7 @@ try {
     results.push(result);
     console.log(`Lighthouse mobile ${run}: ${JSON.stringify(result.categories)}`);
   }
-  writeFileSync('docs/qa-lighthouse.json', `${JSON.stringify({ target: url, method: '3 sequential mobile simulated-throttling runs, local static Astro preview; no concurrent browser QA; laboratory data, not field CWV or measured INP', results }, null, 2)}\n`);
+  writeFileSync(join(outputDirectory, 'qa-lighthouse.json'), `${JSON.stringify({ target: url, method: '3 sequential mobile simulated-throttling runs, local static Astro preview; no concurrent browser QA; laboratory data, not field CWV or measured INP', results }, null, 2)}\n`);
   assert(results.every(result => result.categories.performance >= .9 && result.categories.accessibility >= .9), 'Cel audytowy: Performance i Accessibility >=90 w każdym z 3 przebiegów. Sprawdź raport i obciążenie hosta.');
 } finally {
   await browser.close();

@@ -2,4 +2,28 @@
 import { site } from '../data/site';
 import PhoneIcon from './PhoneIcon.astro';
 ---
-<a class="mobile-cta" href={site.phoneHref}><PhoneIcon />Zadzwoń: {site.phoneDisplay}</a>
+
+<!-- The identical in-flow copy reserves space even without JavaScript or at 200% text. -->
+<div class="mobile-call-reserve" aria-hidden="true">
+  <PhoneIcon />
+  <span class="mobile-call-label">Zadzwoń: {site.phoneDisplay}</span>
+</div>
+<a class="mobile-cta" href={site.phoneHref}>
+  <PhoneIcon />
+  <span class="mobile-call-label">Zadzwoń: {site.phoneDisplay}</span>
+</a>
+
+<script>
+  const callBar = document.querySelector<HTMLElement>('.mobile-cta');
+  if (callBar) {
+    const syncCallHeight = () => {
+      const height = `${Math.ceil(callBar.getBoundingClientRect().height)}px`;
+      const root = document.documentElement;
+      if (root.style.getPropertyValue('--mobile-call-height') !== height) {
+        root.style.setProperty('--mobile-call-height', height);
+      }
+    };
+    new ResizeObserver(syncCallHeight).observe(callBar);
+    syncCallHeight();
+  }
+</script>

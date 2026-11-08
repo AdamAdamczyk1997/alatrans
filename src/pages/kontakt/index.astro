@@ -3,6 +3,7 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 import ContactChannels from '../../components/ContactChannels.astro';
 import { site } from '../../data/site';
 ---
+
 <BaseLayout
   title="Kontakt i baza lawety w Łącku | AlaTrans"
   description="AlaTrans – P.P.H.U. Artur Adamczyk. Zadzwoń: 880 887 092 lub napisz przez WhatsApp i Messenger. Baza lawety: Łącko 984, 33-390 Łącko."
@@ -11,32 +12,67 @@ import { site } from '../../data/site';
   <section class="page-intro contact-intro" aria-labelledby="contact-page-heading">
     <div class="wrap contact-page-grid">
       <div class="contact-page-copy">
+        <p class="section-kicker">Kontakt z AlaTrans</p>
         <h1 id="contact-page-heading">Kontakt — AlaTrans</h1>
-        <p class="lead">Potrzebujesz pomocy na drodze lub planujesz transport? Zadzwoń — omówimy sytuację i ustalimy warunki usługi.</p>
-        <a class="contact-number" href={site.phoneHref}>{site.phoneDisplay}</a>
+        <p class="lead">
+          Potrzebujesz pomocy na drodze lub planujesz transport? Zadzwoń — omówimy sytuację i
+          ustalimy warunki usługi.
+        </p>
+        <a class="contact-number" href={site.phoneHref}>
+          {site.phoneDisplay}
+        </a>
         <div class="contact-page-write">
           <p>Lub napisz do nas:</p>
           <ContactChannels />
         </div>
-        <a class="text-link facebook-link" href={site.facebook} target="_blank" rel="noopener noreferrer">Profil firmy na Facebooku <span aria-hidden="true">↗</span><span class="sr-only"> (otwiera nową kartę)</span></a>
       </div>
       <aside class="contact-service-area" aria-labelledby="contact-area-heading">
         <h2 id="contact-area-heading">Gdzie działamy?</h2>
-        <div><h3>Pomoc drogowa 24/7</h3><p>Łącko, Nowy Sącz, Stary Sącz i szersze okolice. Kontakt także nocą i w święta.</p></div>
-        <div><h3>Transport pojazdów</h3><p>Cała Polska oraz transport samochodów z Niemiec. Trasę, termin i wycenę ustalamy indywidualnie.</p></div>
+        <div>
+          <h3>Pomoc drogowa 24/7</h3>
+          <p>Łącko, Nowy Sącz, Stary Sącz i szersze okolice. Kontakt także nocą i w święta.</p>
+        </div>
+        <div>
+          <h3>Transport pojazdów</h3>
+          <p>
+            Polska i wybrane trasy zagraniczne. Możliwość realizacji, trasę, termin i wycenę
+            ustalamy indywidualnie, zależnie od zlecenia i możliwości firmy.
+          </p>
+        </div>
       </aside>
     </div>
   </section>
+
   <section id="baza" class="section soft base-section" aria-labelledby="base-heading">
     <div class="wrap base-grid">
       <div class="base-copy">
         <h2 id="base-heading">Baza lawety AlaTrans</h2>
         <p class="company-name">{site.companyName}</p>
         <address>{site.address.display}</address>
-        <p>To baza sprzętu, nie punkt obsługi klienta. W przypadku awarii laweta dojeżdża do Ciebie — zadzwoń, aby ustalić miejsce pomocy.</p>
-        <a class="choice secondary map-link" href={site.map} target="_blank" rel="noopener noreferrer">Otwórz w Google Maps <span aria-hidden="true">↗</span><span class="sr-only"> (otwiera nową kartę)</span></a>
+        <p>
+          To baza sprzętu, nie punkt obsługi klienta. W przypadku awarii laweta dojeżdża do Ciebie —
+          zadzwoń, aby ustalić miejsce pomocy.
+        </p>
+        <a
+          class="choice secondary map-link"
+          href={site.map}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          Otwórz w Google Maps <span aria-hidden="true">↗</span>
+          <span class="sr-only"> (otwiera nową kartę)</span>
+        </a>
       </div>
-      <iframe class="base-map" src={site.mapEmbed} title={`Mapa bazy lawety AlaTrans — ${site.address.street}`} width="640" height="350" loading="lazy" referrerpolicy="strict-origin-when-cross-origin"></iframe>
+      <iframe
+        class="base-map"
+        src={site.mapEmbed}
+        title={`Mapa bazy lawety AlaTrans — ${site.address.street}`}
+        width="640"
+        height="350"
+        loading="lazy"
+        allow="fullscreen"
+        referrerpolicy="strict-origin-when-cross-origin"
+      ></iframe>
     </div>
   </section>
 </BaseLayout>
