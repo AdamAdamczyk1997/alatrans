@@ -16,3 +16,29 @@ Thumbs.db
 
 # Tymczasowe
 *.log
+
+# Astro / Node / wyniki lokalne
+node_modules/
+dist/
+.astro/
+.env
+.env.*
+!.env.example
+.netlify/
+test-results/
+playwright-report/
+
+# Generated public asset copies; sources: photos/ and favicon/
+/public/photos/
+/public/favicon/
+
+# Private source photographs — stored in a separate backup
+/photos/realizacje/*.jpg
+
+# Excluded gallery images — not approved for publication
+/photos/realizacje/laweta-jasny-sedan-miniatura.webp
+/photos/realizacje/laweta-skorodowane-auto-na-platformie.webp
+/photos/realizacje/laweta-zardzewialy-samochod-zblizenie.webp
+
+# Generated QA reports and screenshots
+/.artifacts/

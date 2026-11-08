@@ -1,0 +1,74 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { site } from '../../data/site';
+---
+
+<BaseLayout
+  title="Pomoc drogowa 24/7 — Łącko i okolice | AlaTrans"
+  description="Całodobowa pomoc drogowa w Łącku, Nowym Sączu, Starym Sączu i okolicach. Holowanie, wymiana koła, uruchamianie z kabli i dowóz paliwa."
+>
+  <section class="page-intro">
+    <div class="wrap prose">
+      <p class="section-kicker">Pomoc na drodze · 24/7</p>
+      <h1>Pomoc drogowa 24/7 — Łącko i okolice</h1>
+      <p class="lead">
+        Awaria lub unieruchomiony pojazd? Zadzwoń i opisz sytuację. Kontakt w sprawie pomocy
+        drogowej jest dostępny całą dobę — również nocą i w święta.
+      </p>
+      <div class="choices">
+        <a class="choice primary" href={site.phoneHref}>
+          Zadzwoń: {site.phoneDisplay}
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <section class="section soft" aria-labelledby="zakres-pomocy">
+    <div class="wrap content-grid">
+      <div class="prose">
+        <h2 id="zakres-pomocy">W czym możemy pomóc?</h2>
+        <ul class="checklist">
+          <li>Holowanie pojazdów.</li>
+          <li>Wyciąganie pojazdów z rowu.</li>
+          <li>Wymiana koła na miejscu.</li>
+          <li>Uruchamianie samochodu z kabli.</li>
+          <li>Dowóz paliwa.</li>
+        </ul>
+      </div>
+      <article class="detail-card">
+        <h2>Łącko i okolice. Nowy Sącz, Szczawnica czy Mszana Dolna — przyjedziemy, pomożemy</h2>
+        <p>
+          Pomagamy lokalnie i w szerszej okolicy. Podczas rozmowy ustalamy miejsce zdarzenia i
+          możliwość dojazdu.
+        </p>
+        <p>
+          Dostępność pomocy drogowej: 24/7. Czas dojazdu zależy od lokalizacji, warunków i
+          dostępności lawety.
+        </p>
+      </article>
+    </div>
+  </section>
+
+  <section class="section" aria-labelledby="zgloszenie">
+    <div class="wrap content-grid">
+      <div class="prose">
+        <h2 id="zgloszenie">Powiedz nam, gdzie jesteś i co się stało</h2>
+        <p>
+          Przygotuj lokalizację zdarzenia, markę lub rodzaj pojazdu oraz krótki opis problemu. To
+          pomoże ustalić zakres potrzebnej pomocy.
+        </p>
+        <p>Jeśli miejsce zdarzenia jest niebezpieczne, najpierw zadbaj o swoje bezpieczeństwo.</p>
+      </div>
+      <aside class="callout" aria-labelledby="wycena-pomocy">
+        <h2 id="wycena-pomocy">Wycena indywidualna</h2>
+        <p>
+          Cenę i warunki usługi ustalamy w rozmowie, po poznaniu sytuacji. Zadzwoń, aby omówić
+          szczegóły.
+        </p>
+        <a class="text-link" href={site.phoneHref}>
+          {site.phoneDisplay} <span aria-hidden="true">→</span>
+        </a>
+      </aside>
+    </div>
+  </section>
+</BaseLayout>

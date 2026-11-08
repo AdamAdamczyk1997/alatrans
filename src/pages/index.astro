@@ -1,0 +1,60 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import VehiclePhoto from '../components/VehiclePhoto.astro';
+import PhoneIcon from '../components/PhoneIcon.astro';
+import { site } from '../data/site';
+
+// Matches .wrap, --layout-gap and the 28.35rem / 25.65rem flex bases in global.css.
+const contentWidth = 'min(72.5rem, calc(100vw - 2 * clamp(1.125rem, 0.375rem + 3vw, 2rem)))';
+const heroSizes = [
+  `(min-width: 60.51282em) calc((${contentWidth} - clamp(1.5rem, 1rem + 2.5vw, 3.25rem)) * 0.475)`,
+  `min(40rem, ${contentWidth}, calc(${contentWidth} * 0.95 + 1.2825rem))`,
+].join(', ');
+---
+
+<BaseLayout
+  title="AlaTrans — Pomoc drogowa 24/7 i transport pojazdów"
+  description="Pomoc drogowa 24/7 w Łącku i okolicach. Transport pojazdów w Polsce; wybrane trasy zagraniczne uzgadniamy indywidualnie. Zadzwoń: 880 887 092."
+>
+  <section class="hero" aria-labelledby="hero-heading">
+    <div class="wrap hero-grid">
+      <div class="hero-copy">
+        <p class="eyebrow">
+          <span class="dot" aria-hidden="true"></span>Łącko w województwie małopolskim i okolice · dostępność 24/7
+        </p>
+        <h1 id="hero-heading">Pomoc drogowa 24/7 – holowanie i transport pojazdów</h1>
+        <p class="lead">
+          Zapewniamy całodobową pomoc drogową, holowanie oraz transport pojazdów. Szybki kontakt,
+          indywidualna wycena i realna pomoc wtedy, gdy naprawdę jej potrzebujesz.
+        </p>
+        <div class="choices">
+          <a class="choice primary" href="/pomoc-drogowa/">
+            Pomoc drogowa <span aria-hidden="true">↗</span>
+          </a>
+          <a class="choice primary" href="/transport-pojazdow/">
+            Transport pojazdów <span aria-hidden="true">↗</span>
+          </a>
+        </div>
+        <div class="hero-contact">
+          <span class="phone-circle">
+            <PhoneIcon />
+          </span>
+          <div>
+            <small>Potrzebujesz pomocy? Zadzwoń bezpośrednio</small>
+            <a href={site.phoneHref}>
+              <strong>{site.phoneDisplay}</strong>
+            </a>
+          </div>
+        </div>
+      </div>
+      <figure class="hero-art">
+        <VehiclePhoto
+          name="laweta_car_4"
+          alt="Laweta AlaTrans z widoczną kabiną i pustą platformą"
+          hero
+          sizes={heroSizes}
+        />
+      </figure>
+    </div>
+  </section>
+</BaseLayout>

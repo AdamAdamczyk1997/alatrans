@@ -1,0 +1,30 @@
+---
+import { Image } from 'astro:assets';
+import { photos } from '../data/photos';
+
+interface Props {
+  name: keyof typeof photos;
+  alt: string;
+  hero?: boolean;
+  sizes: string;
+}
+const { name, alt, hero = false, sizes } = Astro.props;
+const photo = photos[name];
+const width = Math.min(photo.width, 1600);
+// Lazy images use the rendered width where supported; eager images need the explicit fallback.
+const imageSizes = hero ? sizes : `auto, ${sizes}`;
+---
+
+<Image
+  src={photo}
+  alt={alt}
+  width={width}
+  height={Math.round((width * photo.height) / photo.width)}
+  widths={[480, 800, 1200, 1600].filter((w) => w <= photo.width)}
+  sizes={imageSizes}
+  format="webp"
+  quality={80}
+  loading={hero ? 'eager' : 'lazy'}
+  fetchpriority={hero ? 'high' : 'auto'}
+  decoding="async"
+/>

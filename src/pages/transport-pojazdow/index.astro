@@ -1,0 +1,76 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { site } from '../../data/site';
+---
+
+<BaseLayout
+  title="Transport pojazdów — w Polsce i za granicą | AlaTrans"
+  description="Transport samochodów osobowych, motocykli, quadów i wybranych maszyn w Polsce. Wybrane trasy zagraniczne uzgadniamy indywidualnie, zależnie od możliwości."
+>
+  <section class="page-intro">
+    <div class="wrap prose">
+      <p class="section-kicker">Transport krajowy i zagraniczny</p>
+      <h1>Transport pojazdów — w Polsce i za granicą</h1>
+      <p class="lead">
+        Realizujemy przewozy pojazdów na terenie Polski oraz wybrane trasy zagraniczne. Każde
+        zlecenie ustalamy indywidualnie, dopasowując transport do potrzeb klienta.
+      </p>
+      <div class="choices">
+        <a class="choice primary" href={site.phoneHref}>
+          Zapytaj o wycenę: {site.phoneDisplay}
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <section class="section soft" aria-labelledby="co-przewozimy">
+    <div class="wrap content-grid">
+      <div class="prose">
+        <h2 id="co-przewozimy">Co transportujemy?</h2>
+        <ul class="checklist">
+          <li>Samochody osobowe.</li>
+          <li>Motocykle i quady.</li>
+          <li>Wybrane maszyny i sprzęt budowlany lub rolniczy.</li>
+        </ul>
+        <p>
+          Każde zlecenie dobieramy do możliwości lawety. Przed przyjęciem transportu ustalamy rodzaj
+          pojazdu lub sprzętu oraz potrzebne parametry.
+        </p>
+      </div>
+      <article class="detail-card">
+        <h2>Polska i wybrane trasy zagraniczne</h2>
+        <p>
+          Transport realizujemy na terenie Polski. Możliwość przewozu na wybranych trasach
+          zagranicznych rozpatrujemy indywidualnie, zależnie od zlecenia i możliwości firmy.
+        </p>
+        <p>
+          Trasę, termin odbioru i warunki dostawy potwierdzamy podczas ustalania szczegółów
+          zlecenia.
+        </p>
+      </article>
+    </div>
+  </section>
+
+  <section class="section" aria-labelledby="wycena-transportu">
+    <div class="wrap content-grid">
+      <div class="prose">
+        <h2 id="wycena-transportu">Kilka informacji na początek</h2>
+        <ul class="checklist">
+          <li>Miejsce załadunku i rozładunku.</li>
+          <li>Rodzaj pojazdu lub sprzętu.</li>
+          <li>Planowany termin transportu.</li>
+          <li>Orientacyjna masa i wymiary, jeśli są potrzebne do oceny zlecenia.</li>
+        </ul>
+      </div>
+      <aside class="callout" aria-labelledby="indywidualna-wycena">
+        <h2 id="indywidualna-wycena">Cena dla Twojego zlecenia</h2>
+        <p>
+          Wyceniamy transport indywidualnie po ustaleniu trasy, rodzaju pojazdu i warunków przewozu.
+        </p>
+        <a class="text-link" href={site.phoneHref}>
+          Zadzwoń: {site.phoneDisplay} <span aria-hidden="true">→</span>
+        </a>
+      </aside>
+    </div>
+  </section>
+</BaseLayout>

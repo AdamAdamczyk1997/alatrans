@@ -1,0 +1,26 @@
+---
+import { site } from '../data/site';
+import ContactChannels from './ContactChannels.astro';
+import PhoneIcon from './PhoneIcon.astro';
+---
+
+<section class="contact-section" aria-labelledby="contact-heading">
+  <div class="wrap contact-grid">
+    <div class="contact-copy">
+      <h2 id="contact-heading">Potrzebujesz pomocy?</h2>
+      <p>Zadzwoń w sprawie pomocy drogowej lub wyceny transportu. Ustalimy, jak możemy pomóc.</p>
+    </div>
+    <div class="contact-actions">
+      <a class="contact-call choice primary" href={site.phoneHref}>
+        <PhoneIcon /> Zadzwoń teraz
+      </a>
+      <div class="contact-write">
+        <p>Lub napisz do nas:</p>
+        <ContactChannels />
+        <a class="contact-details-link" href="/kontakt/">
+          Pełne dane i lokalizacja <span aria-hidden="true">→</span>
+        </a>
+      </div>
+    </div>
+  </div>
+</section>

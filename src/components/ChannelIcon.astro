@@ -1,0 +1,15 @@
+---
+interface Props { channel: 'whatsapp' | 'messenger'; }
+const { channel } = Astro.props;
+---
+{channel === 'whatsapp' ? (
+  <svg width="25" height="25" viewBox="0 0 24 24" fill="none" aria-hidden="true" focusable="false">
+    <path d="M20.3 11.7a8.3 8.3 0 0 1-12.2 7.4L3 20.5l1.4-5a8.3 8.3 0 1 1 15.9-3.8Z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round" />
+    <path d="m8.3 7.5-1 .6c-.8 2.9 4.4 8.1 7.3 7.2l.7-1.2-2.5-1.4-.9 1a8.2 8.2 0 0 1-3-3.1l1-.9-1.6-2.2Z" fill="currentColor" />
+  </svg>
+) : (
+  <svg width="25" height="25" viewBox="0 0 24 24" fill="none" aria-hidden="true" focusable="false">
+    <path d="M21 11.4c0 5.2-4.1 8.7-9 8.7-1 0-2-.2-2.8-.5l-3.4 1.9v-3.1A8.2 8.2 0 0 1 3 12.1C3 6.9 7.1 3 12 3s9 3.4 9 8.4Z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round" />
+    <path d="m6.7 14.2 4.1-5 2.4 1.9 4.1-2.2-4.1 5-2.4-1.9-4.1 2.2Z" fill="currentColor" />
+  </svg>
+)}
