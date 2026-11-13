@@ -1,31 +1,52 @@
-# Materiały i decyzje redakcyjne
+# Fotografie i materiały firmy
 
-> Selekcja zdjęć z pierwszej iteracji pozostaje aktualna. Organizacja plików została uporządkowana w iteracji 2: photos/ i favicon/ są źródłami, publiczne kopie generuje skrypt. Pełny audyt checksumów i lista zmian: ASSETS_ITERACJA_2.md. Wzmianki o assets/ oraz pierwotnych public/photos poniżej opisują stan z 31.10.2026.
+## Aktywne źródła
 
-Przeczytano całą specyfikację i HTML makiety (bez przenoszenia obrazów base64). Obejrzano cztery referencyjne screenshoty, oba assets, siedem zdjęć lawety i obie wizytówki. Pliki wejściowe pozostają bez zmian.
+| Materiał | Rola |
+| --- | --- |
+| `photos/realizacje/*.webp` — 11 zatwierdzonych plików | Nowe pozycje galerii |
+| `photos/laweta_car_1.webp`–`laweta_car_7.webp` | Starsze fotografie i cele historycznych URL |
+| `photos/logo.png` | Wykorzystywany znak firmy, rzeczywisty PNG |
+| `favicon/` | Siedem źródłowych wariantów favicon |
 
-`assets/laweta_car_4.webp` jest bitowo identyczny z `photos/laweta_car_4.webp` (1600×900). Także `assets/logo.png` i `photos/logo.png` są identyczne (5036×3583, biały prostokąt RGB). Nie zmieniano znaku, nie retuszowano zdjęć. Astro generuje mniejsze warianty WebP; oryginały pozostają w repo.
+Galeria `/realizacje/` zawiera **16 zdjęć**: 11 nowych i pięć starszych
+(1, 3, 4, 5, 7). Kolejność, importy i alty określa `src/data/realizacje.ts`;
+`src/data/photos.ts` udostępnia starsze fotografie. WebP 2 i 6 pozostają wymagane
+dla stałych adresów, mimo że nie są pozycjami galerii.
+Właściciel zatwierdził publikację 11 nowych WebP również w publicznym GitHub.
 
-| Zdjęcie | Wymiary źródła | Decyzja |
-| --- | --- | --- |
-| laweta_car_1 | 4160×3120 | Galeria; jasny samochód osobowy na platformie; źródło ok. 1,82 MB, wariant 480 px ok. 31 kB |
-| laweta_car_2 | 4160×3120 | Pominięte w galerii: bus/minivan, ryzyko sugerowania niepotwierdzonej usługi |
-| laweta_car_3 | 1600×1200 | Galeria; laweta z uszkodzonym autem nocą |
-| laweta_car_4 | 1600×900 | Hero i galeria; kabina i pusta platforma, pełne 16:9 |
-| laweta_car_5 | 1600×900 | O firmie i galeria; inny, szeroki widok pustej lawety |
-| laweta_car_6 | 260×195 | Pominięte: mała rozdzielczość i podobny temat nocny jak zdjęcie 3 |
-| laweta_car_7 | 2048×1536 | Galeria; niebieski samochód osobowy na platformie |
-| info_card_1 | 2048×1116 | Pominięte: niezaakceptowany do eksponowania e-mail |
-| info_card_2 | 2048×1140 | Pominięte: niepotwierdzone przyczepy i starsza oferta |
+Skrypt `scripts/sync-public-assets.mjs` odtwarza z jawnej listy **15 kopii**:
+siedem starych WebP, logo i siedem faviconów. Powstają w ignorowanych
+`public/photos/` i `public/favicon/`; nie edytować ich ręcznie ani nie commitować.
+Nowe fotografie są importowane przez Astro, które generuje warianty w
+`dist/_astro/`; nie dodaje się ich do publicznej listy kopii.
 
-Galeria ma pięć zdjęć i wyłącznie opisy widocznej zawartości. Nie dopisywano dat, miejsc, historii ani opinii klientów. Nie ma galerii na głównej. Powiększenia również korzystają z wariantu maks. 1600 px. Starsze adresy zdjęć WebP zachowano w public/photos dla zgodności; nie są wszystkie promowane w nowym serwisie.
+## Prywatne i historyczne źródła
 
-## Kadr i zgodność z makietą
+Oryginały JPG, trzy wykluczone WebP, starsze wizytówki, pełny prywatny manifest
+oraz materiały pochodzenia pozostają w prywatnym archiwum poza repozytorium.
+Archiwum zawiera również oryginalny projekt logo PDF, wcześniej błędnie nazwany
+jako PNG; nie jest to wykorzystywany przez stronę `photos/logo.png`.
+Inwentarz archiwum i sumy SHA-256 przechowuje się razem z archiwum, nie w Git.
+Usunięcie dawniej śledzonego pliku z bieżącego drzewa nie usuwa go z historii Git.
 
-Kontener 1160 px, marginesy 140 px przy 1440, na mobile 18 px. Zachowano kolejność sekcji, kolory, typografię systemową, obrysy i żółty detal za zdjęciem. Usunięto baner i dopiski demonstracyjne. Dopracowano kontrast drobnych podpisów i obszary interakcji.
+## Aktualizowanie galerii
 
-Hero używa pełnych proporcji 16:9, height:auto i object-fit:contain zamiast referencyjnego wysokiego cover. Widać platformę po lewej i kabinę po prawej. Sam oryginał minimalnie ucina skrajny tył platformy; nie odtwarzano brakujących fragmentów. Zmniejszenie wysokości fotografii i jej wyśrodkowanie w prawej kolumnie to zamierzona realizacja poprawki briefu.
+1. Zachowaj oryginał i jego sumę SHA-256 w prywatnym archiwum; przed dodaniem
+   uzyskaj zgodę właściciela na publikację zdjęcia i treści opisu.
+2. Przygotuj zatwierdzony WebP bez nadpisywania oryginału; do repo dodaj wyłącznie
+   wersję przeznaczoną do publikacji. Projekt nie ma osobnego skryptu konwersji
+   oryginałów do kanonicznych WebP.
+3. Dodaj import, stabilny identyfikator i opis widocznej sceny w
+   `src/data/realizacje.ts`; zachowaj proporcje i orientację kadru.
+4. Zaktualizuj świadomie kontrakty galerii w `scripts/check-build.mjs` i
+   `scripts/browser-qa.mjs`, jeżeli zmienia się liczba lub kolejność zdjęć;
+   wykonaj build, testy i przegląd galerii zgodnie z [WERYFIKACJA.md](WERYFIKACJA.md).
+5. Sprawdź diff oraz listę plików przeznaczonych do commita: oryginały,
+   wykluczone ujęcia i prywatny manifest mają pozostać poza publicznym Git.
 
-## Do potwierdzenia przez właściciela
-
-Na części zdjęć są tablice rejestracyjne, prywatne posesje i auta osób trzecich; zdjęcie nocne przedstawia uszkodzony pojazd. Nie stwierdzono wyraźnych twarzy w obejrzanych kadrach, ale nie jest to potwierdzenie praw do publikacji. W odczytanym EXIF JPG nie było GPS; nie oznacza to pełnego audytu wszystkich metadanych. Bez decyzji właściciela niczego nie zamazywano ani nie retuszowano.
+Obecne kadry przyczep opisują scenę, nie ofertę ich transportu lub holowania.
+Nie dopisywać historii zdarzeń, marek ani usług na podstawie samego zdjęcia.
+Potwierdzone dane firmy i kontaktów są w `src/data/site.ts`; ceny, parametry
+sprzętu, opinie i obietnice czasu dojazdu wymagają rzeczywistych danych oraz
+osobnej akceptacji. Baza firmy nie jest instrukcją przyjazdu do niej po awarii.

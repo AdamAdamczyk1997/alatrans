@@ -1,10 +1,12 @@
 # AlaTrans 2.0
 
-Statyczna, polskojęzyczna strona pomocy drogowej i transportu pojazdów. Repozytorium i istniejący hosting Netlify pozostają te same; produkcja: https://alatrans.pl/.
+Statyczna strona pomocy drogowej i transportu pojazdów: [alatrans.pl](https://alatrans.pl/).
+Repozytorium `AdamAdamczyk1997/alatrans`, publikacja przez Netlify.
 
-## Uruchomienie lokalne
+## Uruchomienie
 
-Node **22.23.4** (`.nvmrc`), npm >=9.6.5. Astro **7.4.4**, TypeScript, zwykły CSS. Bez React, SSR, adaptera Netlify i backendu. Zależności przypięte w `package-lock.json`.
+Astro 7.4.4, TypeScript i zwykły CSS. Zalecany Node **22.23.4** z `.nvmrc`
+(taki sam jak w Netlify), npm >=9.6.5; zależności są przypięte w lockfile.
 
 ```bash
 nvm install
@@ -13,63 +15,42 @@ npm ci
 npm run dev
 ```
 
+Przed przekazaniem zmiany:
+
 ```bash
 npm run check
 npm run build
 npm test
-npm run preview
+node --test scripts/netlify-release-gate.test.mjs
 ```
 
-Build tworzy `dist/`, sześć stron HTML, techniczne `404.html`, sitemap i zoptymalizowane obrazy. `postbuild` ustawia indeksowanie zależnie od kontekstu. Astro 7 uruchamia podgląd w tle; zakończenie: `npx astro preview stop`.
+`npm run preview` udostępnia wcześniej zbudowany `dist/`; adres wypisuje Astro.
+Hooki npm synchronizują zasoby przed dev/build/preview, a `postbuild` ustawia
+indeksowanie odpowiednie dla produkcji lub podglądu.
 
-## Strony i źródła
+## Struktura
 
-| URL | Plik |
+| Ścieżka | Przeznaczenie |
 | --- | --- |
-| `/` | `src/pages/index.astro` |
-| `/pomoc-drogowa/` | `src/pages/pomoc-drogowa/index.astro` |
-| `/transport-pojazdow/` | `src/pages/transport-pojazdow/index.astro` |
-| `/realizacje/` | `src/pages/realizacje/index.astro` |
-| `/o-firmie/` | `src/pages/o-firmie/index.astro` |
-| `/kontakt/` | `src/pages/kontakt/index.astro` |
+| `src/pages/` | Sześć stron, techniczne 404 i sitemap |
+| `src/components/`, `src/layouts/`, `src/styles/` | Wspólny interfejs, SEO i style |
+| `src/data/site.ts` | Dane firmy, telefon, komunikatory, mapa i nawigacja |
+| `src/data/realizacje.ts`, `src/data/photos.ts` | Rejestry fotografii i kolejność galerii |
+| `photos/`, `favicon/` | Zatwierdzone źródła zasobów |
+| `public/robots.txt` | Źródłowy plik robots produkcji |
+| `scripts/` | Synchronizacja zasobów, finalizacja, release gate i testy |
+| `docs/` | Instrukcje utrzymania |
 
-- `src/data/site.ts`: wspólny telefon, marka i menu.
-- `src/layouts/BaseLayout.astro`: SEO, JSON-LD i wspólna struktura.
-- `src/components/`: header, telefon mobile, kontakt, stopka i responsywne obrazy.
-- `src/styles/global.css`: tokeny i responsywny design zgodny z referencją.
-- `photos/` i `favicon/`: pojedyncze źródła zasobów. Hooki predev/prebuild/prepreview synchronizują wybrane pliki do ignorowanych public/photos i public/favicon; Astro przetwarza importy bezpośrednio ze źródeł. Unikalne starsze JPG i wizytówki pozostają w photos/ jako materiały źródłowe.
-- `reference/` i specyfikacja: materiały zatwierdzone przez właścicieli, nie są publikowane w `dist/`.
+Strony: `/`, `/pomoc-drogowa/`, `/transport-pojazdow/`, `/realizacje/`,
+`/o-firmie/`, `/kontakt/`. Serwis nie wymaga backendu ani SSR.
 
-## Weryfikacja w przeglądarkach
+`dist/`, `.astro/`, `node_modules/`, `.artifacts/` oraz kopie `public/photos/`
+i `public/favicon/` są generowane i pozostają poza Git. Historyczne raporty,
+makiety, prompty i prywatne materiały źródłowe przechowuje prywatne archiwum
+poza repozytorium; wcześniejsze wersje śledzonych plików pozostają w historii Git.
 
-```bash
-npx playwright install chromium webkit
-npm run test:browser
-# Po zakończeniu QA, przy uruchomionym npm run preview:
-npm run test:lighthouse
-```
+## Utrzymanie
 
-W systemie muszą być dostępne biblioteki wymagane przez Playwright. Opcjonalne `WEBKIT_EXECUTABLE_PATH` wskazuje lokalny wrapper WebKit w niestandardowym środowisku; nie jest wymagane na typowym wspieranym systemie. Skrypt sam uruchamia i zamyka serwer statyczny, generuje `docs/qa-browser.json` oraz zrzuty. Pełne obrazy mobile pomijają pasek fixed wyłącznie na screenshotach; osobne viewporty dokumentują jego faktyczne działanie.
-
-```bash
-PREVIEW_NOINDEX=true npm run build
-node scripts/check-build.mjs --preview
-npm run build
-npm test
-```
-
-Ostatni build przywraca wariant produkcyjny. Preview ma meta noindex, blokadę robots i plik `_headers` z `X-Robots-Tag`. Produkcja pozostaje indeksowalna.
-
-## Dokumentacja
-
-- [Audyt przed przebudową](docs/AUDYT.md)
-- [Selekcja fotografii](docs/MATERIALY.md)
-- [Wyniki i ograniczenia testów](docs/WERYFIKACJA.md)
-- [PR, bezpieczna publikacja i rollback](docs/WDROZENIE.md)
-- [Gotowa treść PR](docs/PR_BODY.md)
-- [Zmiany UX/UI i potwierdzenia z iteracji 2](docs/ITERACJA_2.md)
-- [Audyt zasobów i checksumów](docs/ASSETS_ITERACJA_2.md)
-
-Nie dodawać Notes.txt, sekretów, plików .env, node_modules ani dist. Nie wykonywać merge do main ani publikacji produkcyjnej bez wyraźnej zgody właściciela.
-
-Bieżąca iteracja 2 jest wyłącznie lokalna: bez push, merge i publikacji. Potwierdzone dane oraz raport tej iteracji: docs/ITERACJA_2.md.
+- [Publikacja, kontrakty SEO i rollback](docs/WDROZENIE.md)
+- [Fotografie, logo i aktualizowanie galerii](docs/MATERIALY.md)
+- [Testy i lokalizacje wyników QA](docs/WERYFIKACJA.md)

@@ -42,3 +42,23 @@ playwright-report/
 
 # Generated QA reports and screenshots
 /.artifacts/
+
+# Historical QA output; current runs use .artifacts/qa/
+/docs/qa-*.json
+/docs/assets-audit-*.json
+/docs/screenshots/
+
+# Private gallery inventory and historical source materials
+/photos/manifest.json
+/photos/ALATRANS_CODEX_REALIZACJE_PROMPT_AKTUALNY.md
+/photos/laweta_car_*.jpg
+/photos/info_card_1.jpg
+/photos/info_card_1.webp
+/photos/info_card_2.jpg
+/photos/info_card_2.webp
+/photos/ALATRANS LOGO.png
+/photos/ALATRANS LOGO.pdf
+
+# Local audit and AI working packages
+/ALATRANS_PAKIET_AUDYTU/
+/ALATRANS_2_0_PROMPT_CODEX_FINALNE_DOPRACOWANIE_UX_UI.md
