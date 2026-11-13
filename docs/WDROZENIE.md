@@ -1,56 +1,62 @@
-# PR i bezpieczne wdrożenie
+# Publikacja i rollback
 
-Stan po iteracji 2 (1.11.2026): prace wyłącznie lokalne. W tej iteracji obowiązuje zakaz push, merge i publikacji. Poniższe kroki otwarcia PR są instrukcją na przyszły, osobno autoryzowany etap.
+Produkcja: [alatrans.pl](https://alatrans.pl/) → projekt Netlify
+`magenta-sundae-24831c`, połączony z `AdamAdamczyk1997/alatrans`.
+Gałąź produkcyjna: `main`; DNS domeny jest zarządzany w SEOHOST.
+Repozytoryjny `netlify.toml` jest źródłem ustawień buildu:
 
-Prace pozostają na lokalnej gałęzi `feat/alatrans-2-redesign`. Nie zmieniono main, DNS, domeny, certyfikatów ani istniejącego projektu Netlify. Nie wykonano produkcyjnego deployu.
+| Ustawienie | Wartość |
+| --- | --- |
+| Katalog projektu | Główny katalog repozytorium |
+| Build command | `node scripts/netlify-release-gate.mjs` |
+| Publish directory | `dist` |
+| Node | `22.23.4` |
+| Produkcja | `CONTEXT=production`, `PREVIEW_NOINDEX` nieustawione lub dokładnie `false` |
+| Deploy Preview / Branch Deploy | `PREVIEW_NOINDEX=true`, ustawione dla tych kontekstów w TOML |
 
-## Dlaczego PR nie został utworzony automatycznie
+Bramka sprawdza kontekst i flagę indeksowania przed uruchomieniem npm, odrzuca
+nieznane konteksty i przerywa po błędzie dowolnego kroku. Wykonuje
+`npm run check` → `npm run build` → `npm test`; dla podglądu ostatnim krokiem
+jest `npm test -- --preview`. `npm run build` zachowuje prebuild i postbuild.
+Testy kontraktu samej bramki uruchamia się osobno — nie należą do tego ciągu.
 
-Brak lokalnego gh i skonfigurowanych poświadczeń GitHub. Bezpieczna próba `git push --dry-run` z wyłączonym pytaniem o hasło zakończyła się `could not read Username for 'https://github.com': terminal prompts disabled`. Nie pobierano tokenów z Notes.txt ani innych plików. Gałąź nie została wypchnięta; link Deploy Preview nie istnieje jeszcze i nie został zgadnięty.
+## Zmiana produkcyjna
 
-## Otwarcie PR
+1. Przygotuj zmianę na gałęzi roboczej, sprawdź diff i wykonaj lokalne testy
+   opisane w [WERYFIKACJA.md](WERYFIKACJA.md).
+2. Wypchnij zatwierdzone commity i otwórz PR do `main`; poczekaj na Netlify
+   Deploy Preview, sprawdź wynik gate oraz podgląd na telefonie i desktopie.
+3. Przed zatwierdzonym merge zapisz identyfikator aktualnego poprawnego
+   produkcyjnego deploya Netlify; jest punktem szybkiego powrotu.
+4. Merge do `main` uruchamia produkcyjny build; sprawdź jego log i publikację
+   na domenie, sześć stron, 404, telefon, menu, galerię oraz mapę.
 
-1. W tym repozytorium uruchom `git status` i upewnij się, że aktywna jest gałąź `feat/alatrans-2-redesign` oraz że masz właściwy commit przebudowy.
-2. Po zalogowaniu do GitHub swoim zwykłym sposobem:
+Preview musi mieć meta `noindex`, robots `Disallow: /` oraz rzeczywisty nagłówek
+`X-Robots-Tag: noindex, nofollow`. Produkcja ma być indeksowalna na sześciu
+stronach publicznych; techniczna strona 404 pozostaje `noindex`.
+Sprawdź też `/robots.txt`, `/sitemap.xml`, canonical oraz HTTPS.
 
-   ```bash
-   git push -u origin feat/alatrans-2-redesign
-   ```
+## Kontrakty do zachowania
 
-3. Otwórz https://github.com/AdamAdamczyk1997/alatrans/compare/main...feat/alatrans-2-redesign?expand=1 i utwórz **Draft Pull Request** do main. Tytuł: „AlaTrans 2.0 — statyczny serwis z sześcioma podstronami”. Wklej zawartość `docs/PR_BODY.md`. Jeżeli masz już gh, alternatywa:
+- Sześć tras z README, ukośnik kończący URL i canonical `https://alatrans.pl`.
+- Unikalne title/description, Open Graph, LocalBusiness z danymi `site.ts`, sitemap.
+- Siedem reguł 301 `/photos/laweta_car_1.jpg`–`laweta_car_7.jpg` do odpowiednich
+  WebP oraz dostępność ich celów, logo i faviconów.
+- Wizytówki i dawne kotwice jednoplikowej strony nie są automatycznie przywracane;
+  zmiana ich obsługi wymaga osobnej decyzji. Tak samo ponowne dodanie SMS/e-mail.
 
-   ```bash
-   gh pr create --draft --base main --head feat/alatrans-2-redesign --title "AlaTrans 2.0 — statyczny serwis z sześcioma podstronami" --body-file docs/PR_BODY.md
-   ```
+GitHub Pages jest oddzielnym, historycznym hostingiem; konfiguracja Netlify nie
+potwierdza jego aktualnego stanu. Publikowanie źródeł Astro z głównego katalogu
+repozytorium nie zastępuje publikacji zbudowanego `dist/`.
 
-4. Poczekaj na check istniejącego Netlify i skopiuj rzeczywisty URL Deploy Preview do PR. Nie twórz drugiego projektu. Repozytoryjny `netlify.toml` deklaruje `npm run build`, `dist` i Node 22.23.4. Nie wymaga zmian DNS ani domeny. Jeżeli panel blokuje Deploy Preview lub nadpisuje wersję Node, odnotuj to do właściciela zamiast zmieniać projekt bez upoważnienia.
-5. Sprawdź podgląd na prawdziwym telefonie i desktopie. Każda z sześciu ścieżek ma zwracać 200; nieistniejąca ścieżka ma zwracać 404. Zweryfikuj `X-Robots-Tag: noindex, nofollow`, robots blokujący preview i meta noindex, np. `curl -I ADRES_PODGLADU/`. To musi być rzeczywisty nagłówek Netlify, nie tylko obecność pliku `_headers` lokalnie.
-6. Wykonaj kontrolę na fizycznym telefonie: dialer, numer docelowy, WhatsApp, Messenger, profil Facebook i mapa bazy. Właściciel potwierdził nazwę firmy, adres oraz działanie WhatsApp i Messengera w briefie iteracji 2. Potwierdź zgody na fotografie.
-7. **Zatrzymaj się przed merge.** Dopiero wyraźna zgoda właściciela autoryzuje osobną czynność merge i produkcyjny deploy.
+## Szybki powrót
 
-## Dodatkowy stary hosting
+W Netlify otwórz poprzedni poprawny deploy i wybierz **Publish Deploy**.
+Zablokuj automatyczną publikację (**Lock to stop auto publishing**), aby kolejny
+build produkcyjny nie nadpisał przywróconej wersji; sprawdź domenę i kontakt.
+Rollback w tym samym projekcie nie wymaga zmiany DNS.
+Naprawę kodu przygotuj potem w osobnej gałęzi i PR, bez force push lub
+przepisywania historii.
 
-Publiczny adres `https://adamadamczyk1997.github.io/alatrans/` również odpowiada starym HTML. Publiczne check-runs potwierdzają historyczny GitHub Pages deploy, choć panelowa konfiguracja nie jest dostępna. To oddzielny adres; alatrans.pl potwierdzono na Netlify. Nie zmieniono Pages ani nie dodano dla niego workflow. Przed merge właściciel powinien zdecydować o tym drugim adresie — publikowanie root repo bez budowania Astro nie będzie obsługiwać nowej architektury. Nie trzeba w tym celu zmieniać domeny alatrans.pl. ID deployment GitHub Pages nie jest ID poprzedniego deployu Netlify.
-
-## Dane potwierdzone w iteracji 2
-
-- AlaTrans – P.P.H.U. Artur Adamczyk; Łącko 984, 33-390 Łącko.
-- Telefon 880 887 092; WhatsApp https://wa.me/48880887092; działający według właściciela Messenger https://m.me/61574526132487; profil https://www.facebook.com/61574526132487/.
-- Zatwierdzony link bazy: https://maps.app.goo.gl/wpTjFzKYmChzWnn86. Baza nie jest punktem obsługi, do którego należy przyjechać po awarii.
-
-## Pozostałe kwestie do odbioru
-
-- Prawa do publikacji zdjęć, auta osób trzecich, widoczne tablice i ewentualna potrzeba anonimizacji.
-- Ładowność, wymiary platformy, wyposażenie, możliwość przewozu dostawczaków i przyczep. Nie są reklamowane.
-- Autentyczne opinie: sekcja nie powstała; brak zgadywanych cen, stażu i statystyk.
-- Przed publikacją kontrola aplikacji komunikatorów i mapy na fizycznym urządzeniu. Automatyczny odczyt HTTP nie zastępuje takiego testu.
-
-## Po zatwierdzonym merge (osobna autoryzacja)
-
-Przed merge zapisz w panelu istniejącego Netlify ID ostatniego dobrego deployu. Punkt odniesienia Git: `c8ac902cd737fae5678378d9d2d3a966f57d2a78`; audyt potwierdził, że jego HTML odpowiadał produkcji. W tej sesji nie uzyskano ID deployu.
-
-Po deployu sprawdź https://alatrans.pl/, przekierowanie www, HTTPS, sześć URL/200 i 404, telefon, WhatsApp, Messenger, Facebook, mapę, menu, galerię, favicony, canonical i OG. Potwierdź, że produkcja NIE zawiera noindex ani blokady robots. Sprawdź https://alatrans.pl/sitemap.xml i https://alatrans.pl/robots.txt. Jeśli właściciel ma dostęp do Google Search Console, prześlij sitemap i wykonaj inspekcję URL; nie twórz nowych kont bez zgody.
-
-## Rollback
-
-W istniejącym projekcie Netlify wybierz zapisany poprzedni poprawny deploy i użyj funkcji przywrócenia/publikacji tego deployu. Nie zmieniaj DNS. Jeżeli zespół wybierze cofnięcie kodu, przygotuj revert commita/merge przebudowy w osobnej gałęzi i PR; po zatwierdzeniu jego merge uruchomi CD. Nie stosuj force push do main. Po rollback sprawdź domenę, telefon i poprzedni serwis. Sam rollback produkcyjny również wymaga autoryzacji właściciela.
+Źródła: [konfiguracja Netlify](https://docs.netlify.com/build/configure-builds/file-based-configuration/),
+[rollback i blokada publikacji](https://docs.netlify.com/deploy/manage-deploys/manage-deploys-overview/#rollbacks).
